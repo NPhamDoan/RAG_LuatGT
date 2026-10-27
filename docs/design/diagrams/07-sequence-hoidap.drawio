@@ -1,0 +1,101 @@
+<mxfile host="Electron">
+  <diagram name="sequence-hoidap" id="seqhoidap">
+    <mxGraphModel dx="1026" dy="1127" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ll_user" parent="1" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;size=53;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;Người dùng" vertex="1">
+          <mxGeometry height="550" width="40" x="79" y="18" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_api" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontFamily=Segoe UI;" value="Route hỏi-đáp" vertex="1">
+          <mxGeometry height="550" width="120" x="210" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_qp" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="Xử lý hỏi-đáp" vertex="1">
+          <mxGeometry height="550" width="120" x="380" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_emb" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontFamily=Segoe UI;" value="Embedding" vertex="1">
+          <mxGeometry height="550" width="120" x="550" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_ret" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="Tìm kiếm" vertex="1">
+          <mxGeometry height="550" width="120" x="720" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_llm" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontFamily=Segoe UI;" value="LLM" vertex="1">
+          <mxGeometry height="550" width="120" x="890" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="altf" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;width=230;height=26;fillColor=none;strokeColor=#999999;fontSize=10;fontStyle=2;fontFamily=Segoe UI;verticalAlign=top;align=left;" value="alt  [đủ liên quan / không đủ hoặc LLM lỗi]" vertex="1">
+          <mxGeometry height="180" width="660" x="360" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="divider" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="422" as="sourcePoint" />
+            <mxPoint x="1020" y="422" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m1" edge="1" parent="1" style="html=1;endArrow=block;endFill=1;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" value="câu hỏi">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="100" y="100" as="sourcePoint" />
+            <mxPoint x="270" y="100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" edge="1" parent="1" style="html=1;endArrow=block;endFill=1;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" value="xử lý">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="140" as="sourcePoint" />
+            <mxPoint x="440" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" edge="1" parent="1" style="html=1;endArrow=block;endFill=1;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" value="sinh vector câu hỏi">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="180" as="sourcePoint" />
+            <mxPoint x="610" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" edge="1" parent="1" style="html=1;endArrow=block;endFill=1;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" value="tìm đoạn liên quan">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="220" as="sourcePoint" />
+            <mxPoint x="780" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m5" edge="1" parent="1" style="html=1;endArrow=open;dashed=1;endFill=0;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" value="đoạn kèm điểm">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="780" y="260" as="sourcePoint" />
+            <mxPoint x="440" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" edge="1" parent="1" style="html=1;endArrow=block;endFill=1;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" value="lọc ngưỡng">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="295" />
+              <mxPoint x="520" y="325" />
+            </Array>
+            <mxPoint x="440" y="295" as="sourcePoint" />
+            <mxPoint x="440" y="325" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m7" edge="1" parent="1" style="html=1;endArrow=block;endFill=1;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" value="tổng hợp kèm prompt đánh số đoạn">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="370" as="sourcePoint" />
+            <mxPoint x="950" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" edge="1" parent="1" style="html=1;endArrow=open;dashed=1;endFill=0;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" value="trả lời kèm chỉ số trích dẫn">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="405" as="sourcePoint" />
+            <mxPoint x="440" y="405" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" edge="1" parent="1" style="html=1;endArrow=open;dashed=1;endFill=0;startArrow=none;strokeColor=#b85450;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" value="báo không tìm thấy hoặc trả đoạn gốc">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="455" as="sourcePoint" />
+            <mxPoint x="270" y="455" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" edge="1" parent="1" style="html=1;endArrow=open;dashed=1;endFill=0;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" value="trả lời kèm trích dẫn và độ tin cậy">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="545" as="sourcePoint" />
+            <mxPoint x="100" y="545" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

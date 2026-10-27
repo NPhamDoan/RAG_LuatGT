@@ -1,0 +1,98 @@
+<mxfile host="Electron">
+  <diagram name="use-case" id="usecase">
+    <mxGraphModel dx="934" dy="662" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="sys" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;dashed=0;verticalAlign=top;fontSize=13;fontStyle=1;fontFamily=Segoe UI;" value="Hệ thống RAG Luật Giao thông" vertex="1">
+          <mxGeometry height="660" width="376" x="204" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uc1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontFamily=Segoe UI;" value="Đặt câu hỏi tra cứu" vertex="1">
+          <mxGeometry height="54" width="220" x="330" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc2" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontFamily=Segoe UI;" value="Xem trả lời và trích dẫn" vertex="1">
+          <mxGeometry height="54" width="220" x="330" y="148" as="geometry" />
+        </mxCell>
+        <mxCell id="uc3" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontFamily=Segoe UI;" value="Xem danh sách văn bản" vertex="1">
+          <mxGeometry height="54" width="220" x="330" y="226" as="geometry" />
+        </mxCell>
+        <mxCell id="uc4" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontFamily=Segoe UI;" value="Đăng nhập admin" vertex="1">
+          <mxGeometry height="54" width="220" x="330" y="304" as="geometry" />
+        </mxCell>
+        <mxCell id="uc5" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontFamily=Segoe UI;" value="Nạp văn bản" vertex="1">
+          <mxGeometry height="54" width="220" x="330" y="388" as="geometry" />
+        </mxCell>
+        <mxCell id="uc6" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontFamily=Segoe UI;" value="Sửa thông tin văn bản" vertex="1">
+          <mxGeometry height="54" width="220" x="330" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="uc7" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontFamily=Segoe UI;" value="Xóa văn bản" vertex="1">
+          <mxGeometry height="54" width="220" x="330" y="538" as="geometry" />
+        </mxCell>
+        <mxCell id="uc8" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontFamily=Segoe UI;" value="Quản lý lịch sử trò chuyện" vertex="1">
+          <mxGeometry height="54" width="220" x="330" y="616" as="geometry" />
+        </mxCell>
+        <mxCell id="eHistory" edge="1" parent="1" source="userA" style="endArrow=none;html=1;strokeColor=#333333;" target="uc8">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="155" y="643" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="userA" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fontSize=12;fontFamily=Segoe UI;" value="Người dùng" vertex="1">
+          <mxGeometry height="90" width="50" x="70" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="adminA" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fontSize=12;fontFamily=Segoe UI;" value="Quản trị viên" vertex="1">
+          <mxGeometry height="90" width="50" x="660" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="llmA" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fontSize=12;fontFamily=Segoe UI;" value="Dịch vụ LLM" vertex="1">
+          <mxGeometry height="90" width="50" x="660" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="eLlm" edge="1" parent="1" source="llmA" style="endArrow=none;html=1;strokeColor=#333333;" target="uc1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="userA" style="endArrow=none;html=1;strokeColor=#333333;" target="uc1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="uc1" style="endArrow=open;dashed=1;html=1;strokeColor=#6c8ebf;fontSize=10;fontFamily=Segoe UI;" target="uc2" value="«include»">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="userA" style="endArrow=none;html=1;strokeColor=#333333;" target="uc3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="adminA" style="endArrow=none;html=1;strokeColor=#333333;" target="uc3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="adminA" style="endArrow=none;html=1;strokeColor=#333333;" target="uc4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="adminA" style="endArrow=none;html=1;strokeColor=#333333;" target="uc5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="adminA" style="endArrow=none;html=1;strokeColor=#333333;" target="uc6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="adminA" style="endArrow=none;html=1;strokeColor=#333333;" target="uc7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" edge="1" parent="1" source="uc5" style="endArrow=open;dashed=1;html=1;strokeColor=#b85450;fontSize=10;fontFamily=Segoe UI;" target="uc4" value="«include»">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" edge="1" parent="1" source="uc6" style="endArrow=open;dashed=1;html=1;strokeColor=#b85450;fontSize=10;fontFamily=Segoe UI;" target="uc4" value="«include»">
+          <mxGeometry relative="1" x="-0.1305" as="geometry">
+            <Array as="points">
+              <mxPoint x="272.88" y="487" />
+              <mxPoint x="272.88" y="331" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d3" edge="1" parent="1" source="uc7" style="endArrow=open;dashed=1;html=1;strokeColor=#b85450;fontSize=10;fontFamily=Segoe UI;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="uc4" value="«include»">
+          <mxGeometry relative="1" x="-0.2047" as="geometry">
+            <Array as="points">
+              <mxPoint x="235.38" y="566.04" />
+              <mxPoint x="235.38" y="427.5" />
+              <mxPoint x="233.64" y="329.93" />
+            </Array>
+            <mxPoint x="416" y="538" as="sourcePoint" />
+            <mxPoint x="416" y="358.0000000000001" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

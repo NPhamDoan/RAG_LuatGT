@@ -1,0 +1,141 @@
+<mxfile host="Electron">
+  <diagram name="architecture" id="arch">
+    <mxGraphModel dx="1004" dy="712" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="feBox" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;verticalAlign=top;fontSize=13;fontStyle=1;fontFamily=Segoe UI;" value="Frontend React" vertex="1">
+          <mxGeometry height="390" width="290" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="beBox" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;verticalAlign=top;fontSize=13;fontStyle=1;fontFamily=Segoe UI;" value="Backend FastAPI" vertex="1">
+          <mxGeometry height="670" width="600" x="380" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="login" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="Trang đăng nhập" vertex="1">
+          <mxGeometry height="44" width="110" x="70" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="chat" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="Trang Chat" vertex="1">
+          <mxGeometry height="44" width="105" x="195" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="admin" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="Trang Quản lý" vertex="1">
+          <mxGeometry height="44" width="110" x="70" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="fauth" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="AuthContext và token" vertex="1">
+          <mxGeometry height="44" width="230" x="70" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="apicli" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="axios client gắn Bearer" vertex="1">
+          <mxGeometry height="44" width="230" x="70" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="rauth" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontFamily=Segoe UI;" value="Route đăng nhập" vertex="1">
+          <mxGeometry height="44" width="150" x="410" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="llmf" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontFamily=Segoe UI;" value="Bộ chọn LLM" vertex="1">
+          <mxGeometry height="44" width="150" x="610" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="rquery" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontFamily=Segoe UI;" value="Route hỏi-đáp" vertex="1">
+          <mxGeometry height="44" width="150" x="410" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="qp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="Xử lý hỏi-đáp" vertex="1">
+          <mxGeometry height="44" width="150" x="610" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="ret" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="Tìm kiếm lai&#xa;vector + BM25 + RRF" vertex="1">
+          <mxGeometry height="52" width="160" x="800" y="176" as="geometry" />
+        </mxCell>
+        <mxCell id="rdoc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontFamily=Segoe UI;" value="Route văn bản&#xa;(ghi cần token)" vertex="1">
+          <mxGeometry height="52" width="150" x="410" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="guard" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontFamily=Segoe UI;" value="Kiểm tra token" vertex="1">
+          <mxGeometry height="44" width="150" x="410" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="dp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="Xử lý nạp văn bản" vertex="1">
+          <mxGeometry height="52" width="150" x="610" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="chk" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="Bộ cắt văn bản" vertex="1">
+          <mxGeometry height="44" width="160" x="800" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="en" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" value="Làm giàu dữ liệu" vertex="1">
+          <mxGeometry height="44" width="160" x="800" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="emb" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontFamily=Segoe UI;" value="Embedding e5" vertex="1">
+          <mxGeometry height="44" width="150" x="610" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="store" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontFamily=Segoe UI;" value="ChromaDB" vertex="1">
+          <mxGeometry height="72" width="160" x="605" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="fe1" edge="1" parent="1" source="login" style="endArrow=open;html=1;strokeColor=#333333;" target="fauth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fe2" edge="1" parent="1" source="admin" style="endArrow=open;html=1;strokeColor=#333333;" target="fauth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fe3" edge="1" parent="1" source="chat" style="endArrow=open;html=1;strokeColor=#333333;" target="apicli">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fe4" edge="1" parent="1" source="admin" style="endArrow=open;html=1;strokeColor=#333333;" target="apicli">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fe5" edge="1" parent="1" source="fauth" style="endArrow=open;html=1;strokeColor=#333333;" target="apicli">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c1" edge="1" parent="1" source="apicli" style="endArrow=open;html=1;strokeColor=#6c8ebf;fontSize=10;fontFamily=Segoe UI;" target="rauth" value="HTTP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" edge="1" parent="1" source="apicli" style="endArrow=open;html=1;strokeColor=#6c8ebf;fontSize=10;fontFamily=Segoe UI;" target="rquery" value="HTTP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" edge="1" parent="1" source="apicli" style="endArrow=open;html=1;strokeColor=#6c8ebf;fontSize=10;fontFamily=Segoe UI;" target="rdoc" value="HTTP + Bearer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" edge="1" parent="1" source="rdoc" style="endArrow=open;html=1;strokeColor=#333333;" target="guard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" edge="1" parent="1" source="rquery" style="endArrow=open;html=1;strokeColor=#333333;" target="qp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" edge="1" parent="1" source="qp" style="endArrow=open;html=1;strokeColor=#333333;" target="ret">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b4" edge="1" parent="1" source="qp" style="endArrow=open;html=1;strokeColor=#333333;" target="emb">
+          <mxGeometry relative="1" x="-0.0145" as="geometry">
+            <Array as="points">
+              <mxPoint x="685" y="276.17" />
+              <mxPoint x="770.19" y="276.17" />
+              <mxPoint x="770.19" y="421.87" />
+              <mxPoint x="685" y="419.18" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="b5" edge="1" parent="1" source="qp" style="endArrow=open;html=1;strokeColor=#333333;" target="llmf">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b6" edge="1" parent="1" source="ret" style="endArrow=open;html=1;strokeColor=#333333;" target="store">
+          <mxGeometry relative="1" x="0.0714" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="279.94" />
+              <mxPoint x="969.66" y="279.94" />
+              <mxPoint x="969.66" y="628.86" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="b7" edge="1" parent="1" source="rdoc" style="endArrow=open;html=1;strokeColor=#333333;" target="dp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b8" edge="1" parent="1" source="dp" style="endArrow=open;html=1;strokeColor=#333333;" target="chk">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b9" edge="1" parent="1" source="chk" style="endArrow=open;html=1;strokeColor=#333333;" target="en">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b10" edge="1" parent="1" source="en" style="endArrow=open;html=1;strokeColor=#333333;" target="emb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="512" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="b11" edge="1" parent="1" source="emb" style="endArrow=open;html=1;strokeColor=#333333;" target="store">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,3 @@
+# Dev/test dependencies (không cần cho chạy production)
+# Cài: python -m pip install -r requirements-dev.txt
+pytest>=8.0

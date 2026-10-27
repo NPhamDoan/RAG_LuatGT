@@ -1,0 +1,59 @@
+<mxfile host="Electron">
+  <diagram name="domain-model" id="domain">
+    <mxGraphModel dx="943" dy="669" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="vb" parent="1" style="verticalAlign=top;align=left;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;spacingLeft=8;spacingTop=6;fontSize=12;fontFamily=Segoe UI;" value="&lt;b&gt;Văn bản pháp luật&lt;/b&gt;&#xa;──────────────&#xa;số hiệu&#xa;tên văn bản&#xa;ngày ban hành&#xa;ngày hiệu lực&#xa;cơ quan ban hành&#xa;loại văn bản" vertex="1">
+          <mxGeometry height="170" width="220" x="60" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="dieu" parent="1" style="verticalAlign=top;align=left;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;spacingLeft=8;spacingTop=6;fontSize=12;fontFamily=Segoe UI;" value="&lt;b&gt;Điều luật (Đoạn)&lt;/b&gt;&#xa;──────────────&#xa;điều&#xa;khoản&#xa;điểm (mục)&#xa;nội dung&#xa;loại xe áp dụng" vertex="1">
+          <mxGeometry height="150" width="220" x="420" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ch" parent="1" style="verticalAlign=top;align=left;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#ffe6cc;strokeColor=#d79b00;spacingLeft=8;spacingTop=6;fontSize=12;fontFamily=Segoe UI;" value="&lt;b&gt;Câu hỏi&lt;/b&gt;&#xa;──────────────&#xa;nội dung câu hỏi&#xa;(tình huống giao thông)" vertex="1">
+          <mxGeometry height="90" width="220" x="60" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="tl" parent="1" style="verticalAlign=top;align=left;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#ffe6cc;strokeColor=#d79b00;spacingLeft=8;spacingTop=6;fontSize=12;fontFamily=Segoe UI;" value="&lt;b&gt;Câu trả lời&lt;/b&gt;&#xa;──────────────&#xa;nội dung&#xa;độ tin cậy" vertex="1">
+          <mxGeometry height="90" width="220" x="420" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="td" parent="1" style="verticalAlign=top;align=left;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#e1d5e7;strokeColor=#9673a6;spacingLeft=8;spacingTop=6;fontSize=12;fontFamily=Segoe UI;" value="&lt;b&gt;Trích dẫn&lt;/b&gt;&#xa;──────────────&#xa;số hiệu&#xa;điều, khoản&#xa;nội dung đầy đủ" vertex="1">
+          <mxGeometry height="110" width="200" x="760" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" edge="1" parent="1" source="vb" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;strokeColor=#333333;fontSize=11;fontFamily=Segoe UI;" target="dieu" value="gồm nhiều">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" edge="1" parent="1" source="ch" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERone;startFill=0;endArrow=ERone;endFill=0;strokeColor=#333333;fontSize=11;fontFamily=Segoe UI;" target="tl" value="sinh ra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" edge="1" parent="1" source="tl" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;strokeColor=#333333;fontSize=11;fontFamily=Segoe UI;" target="td" value="kèm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" edge="1" parent="1" source="td" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;strokeColor=#333333;fontSize=11;fontFamily=Segoe UI;" target="dieu" value="dẫn nguồn từ">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="860" y="150" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r5" edge="1" parent="1" source="ch" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmany;startFill=0;endArrow=ERmany;endFill=0;strokeColor=#999999;dashed=1;fontSize=11;fontFamily=Segoe UI;" target="dieu" value="tra cứu trên">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="session" parent="1" style="verticalAlign=top;align=left;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;spacingLeft=8;spacingTop=6;fontSize=12;fontFamily=Segoe UI;" value="&lt;b&gt;Cuộc trò chuyện&lt;/b&gt;&#xa;──────────────&#xa;mã&#xa;tiêu đề&#xa;thời gian tạo/cập nhật" vertex="1">
+          <mxGeometry height="110" width="220" x="60" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="message" parent="1" style="verticalAlign=top;align=left;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;spacingLeft=8;spacingTop=6;fontSize=12;fontFamily=Segoe UI;" value="&lt;b&gt;Tin nhắn&lt;/b&gt;&#xa;──────────────&#xa;mã&#xa;vai trò&#xa;nội dung&#xa;thời gian" vertex="1">
+          <mxGeometry height="120" width="220" x="420" y="495" as="geometry" />
+        </mxCell>
+        <mxCell id="r6" edge="1" parent="1" source="session" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;strokeColor=#333333;fontSize=11;fontFamily=Segoe UI;" target="message" value="gồm nhiều">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r7" edge="1" parent="1" source="message" style="endArrow=open;dashed=1;html=1;strokeColor=#999999;fontSize=11;fontFamily=Segoe UI;" target="ch" value="có thể là">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r8" edge="1" parent="1" source="message" style="endArrow=open;dashed=1;html=1;strokeColor=#999999;fontSize=11;fontFamily=Segoe UI;" target="tl" value="có thể chứa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

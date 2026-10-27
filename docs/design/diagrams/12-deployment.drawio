@@ -1,0 +1,26 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="deployment" id="deploy">
+    <mxGraphModel dx="900" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" math="0" shadow="0" defaultFontFamily="Segoe UI">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="br" value="Browser" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="40" y="190" width="140" height="54" as="geometry" /></mxCell>
+        <mxCell id="fe" value="Frontend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="240" y="190" width="140" height="54" as="geometry" /></mxCell>
+        <mxCell id="be" value="Backend FastAPI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="440" y="188" width="160" height="58" as="geometry" /></mxCell>
+
+        <mxCell id="ch" value="ChromaDB (trên đĩa)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="700" y="30" width="180" height="74" as="geometry" /></mxCell>
+        <mxCell id="emb" value="Embedding e5 (trong RAM)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="700" y="150" width="180" height="54" as="geometry" /></mxCell>
+        <mxCell id="llm" value="LLM API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="700" y="250" width="180" height="54" as="geometry" /></mxCell>
+        <mxCell id="oll" value="Ollama (tùy chọn)" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=12;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="700" y="350" width="180" height="54" as="geometry" /></mxCell>
+
+        <mxCell id="e1" value="HTTPS" style="endArrow=open;html=1;strokeColor=#333333;fontSize=11;fontFamily=Segoe UI;" edge="1" parent="1" source="br" target="fe"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" value="/api" style="endArrow=open;html=1;strokeColor=#333333;fontSize=11;fontFamily=Segoe UI;" edge="1" parent="1" source="fe" target="be"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="endArrow=open;html=1;strokeColor=#333333;" edge="1" parent="1" source="be" target="ch"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" style="endArrow=open;html=1;strokeColor=#333333;" edge="1" parent="1" source="be" target="emb"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" value="HTTPS" style="endArrow=open;html=1;strokeColor=#333333;fontSize=11;fontFamily=Segoe UI;" edge="1" parent="1" source="be" target="llm"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" value="local" style="endArrow=open;dashed=1;html=1;strokeColor=#999999;fontSize=11;fontFamily=Segoe UI;" edge="1" parent="1" source="be" target="oll"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

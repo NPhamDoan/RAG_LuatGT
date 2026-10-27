@@ -1,0 +1,19 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="erd" id="erd">
+    <mxGraphModel dx="900" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" math="0" shadow="0" defaultFontFamily="Segoe UI">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="vanban" value="&lt;b&gt;VANBAN&lt;/b&gt;&#10;──────────────&#10;soHieu (PK)&#10;tenVanBan&#10;ngayBanHanh&#10;ngayHieuLuc&#10;coQuanBanHanh&#10;loaiVanBan" style="verticalAlign=top;align=left;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;spacingLeft=8;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="40" y="80" width="230" height="180" as="geometry" /></mxCell>
+
+        <mxCell id="doan" value="&lt;b&gt;DOAN&lt;/b&gt;&#10;──────────────&#10;id (PK)&#10;text&#10;dieu&#10;khoan&#10;muc" style="verticalAlign=top;align=left;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontFamily=Segoe UI;spacingLeft=8;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="420" y="100" width="210" height="150" as="geometry" /></mxCell>
+
+        <mxCell id="vector" value="&lt;b&gt;VECTOR&lt;/b&gt;&#10;──────────────&#10;embedding (1024 chiều)" style="verticalAlign=top;align=left;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontFamily=Segoe UI;spacingLeft=8;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="770" y="120" width="190" height="75" as="geometry" /></mxCell>
+
+        <mxCell id="r1" value="cắt thành" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;" edge="1" parent="1" source="vanban" target="doan"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r2" value="sinh" style="edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERone;endFill=0;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;" edge="1" parent="1" source="doan" target="vector"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

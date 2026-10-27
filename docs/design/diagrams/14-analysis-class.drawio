@@ -1,0 +1,88 @@
+<mxfile host="Electron">
+  <diagram name="analysis-class" id="analysis">
+    <mxGraphModel dx="973" dy="690" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bound1" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«boundary»&lt;/b&gt;&#xa;Giao diện Chat" vertex="1">
+          <mxGeometry height="60" width="160" x="40" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bound2" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«boundary»&lt;/b&gt;&#xa;Giao diện Quản lý" vertex="1">
+          <mxGeometry height="60" width="160" x="40" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrlQ" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#fff2cc;strokeColor=#d6b656;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«control»&lt;/b&gt;&#xa;Bộ điều phối tra cứu" vertex="1">
+          <mxGeometry height="60" width="170" x="300" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrlD" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#fff2cc;strokeColor=#d6b656;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«control»&lt;/b&gt;&#xa;Bộ điều phối nạp văn bản" vertex="1">
+          <mxGeometry height="60" width="170" x="300" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrlA" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#fff2cc;strokeColor=#d6b656;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«control»&lt;/b&gt;&#xa;Bộ xác thực admin" vertex="1">
+          <mxGeometry height="60" width="170" x="300" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="entCh" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«entity»&lt;/b&gt;&#xa;Câu hỏi / Câu trả lời" vertex="1">
+          <mxGeometry height="60" width="160" x="580" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="entKho" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«entity»&lt;/b&gt;&#xa;Kho điều luật (vector)" vertex="1">
+          <mxGeometry height="60" width="160" x="577" y="177" as="geometry" />
+        </mxCell>
+        <mxCell id="entVb" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«entity»&lt;/b&gt;&#xa;Văn bản / Điều luật" vertex="1">
+          <mxGeometry height="60" width="160" x="582" y="381" as="geometry" />
+        </mxCell>
+        <mxCell id="svc1" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#e1d5e7;strokeColor=#9673a6;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«service»&lt;/b&gt;&#xa;Embedding + LLM" vertex="1">
+          <mxGeometry height="60" width="150" x="820" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" edge="1" parent="1" source="bound1" style="endArrow=open;html=1;strokeColor=#333333;" target="ctrlQ">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" edge="1" parent="1" source="bound2" style="endArrow=open;html=1;strokeColor=#333333;" target="ctrlD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" edge="1" parent="1" source="bound2" style="endArrow=open;html=1;strokeColor=#333333;" target="ctrlA">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" edge="1" parent="1" source="ctrlQ" style="endArrow=open;html=1;strokeColor=#333333;" target="entCh">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" edge="1" parent="1" source="ctrlQ" style="endArrow=open;html=1;strokeColor=#333333;" target="entKho">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a6" edge="1" parent="1" source="ctrlQ" style="endArrow=open;html=1;strokeColor=#333333;" target="svc1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="654.6" y="120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a7" edge="1" parent="1" source="ctrlD" style="endArrow=open;html=1;strokeColor=#333333;" target="entVb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a8" edge="1" parent="1" source="ctrlD" style="endArrow=open;html=1;strokeColor=#333333;" target="entKho">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a9" edge="1" parent="1" source="ctrlD" style="endArrow=open;html=1;strokeColor=#333333;" target="svc1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="330" />
+              <mxPoint x="895" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="boundHistory" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«boundary»&lt;/b&gt;&#xa;Thanh lịch sử Chat" vertex="1">
+          <mxGeometry height="60" width="160" x="40" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrlHistory" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#fff2cc;strokeColor=#d6b656;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«control»&lt;/b&gt;&#xa;Bộ quản lý phiên Chat" vertex="1">
+          <mxGeometry height="60" width="170" x="300" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="entSession" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«entity»&lt;/b&gt;&#xa;Cuộc trò chuyện / Tin nhắn" vertex="1">
+          <mxGeometry height="60" width="170" x="580" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="svcStorage" parent="1" style="verticalAlign=top;align=center;overflow=hidden;html=1;whiteSpace=wrap;rounded=0;fillColor=#e1d5e7;strokeColor=#9673a6;spacingTop=6;fontSize=11;fontFamily=Segoe UI;" value="&lt;b&gt;«service»&lt;/b&gt;&#xa;Bộ lưu localStorage" vertex="1">
+          <mxGeometry height="60" width="150" x="820" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="h1" edge="1" parent="1" source="boundHistory" style="endArrow=open;html=1;strokeColor=#333333;" target="ctrlHistory"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="h2" edge="1" parent="1" source="ctrlHistory" style="endArrow=open;html=1;strokeColor=#333333;" target="entSession"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="h3" edge="1" parent="1" source="ctrlHistory" style="endArrow=open;html=1;strokeColor=#333333;" target="svcStorage"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

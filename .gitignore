@@ -1,0 +1,76 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# === Environment (chứa API key) ===
+backend/.env
+.env
+
+# === Data (nặng, sinh lại được) ===
+data/chroma/
+backend/data/chroma/
+
+# === Enrich thủ công (data trung gian, sinh lại được) ===
+enrich_data.jsonl
+enrich_data.txt
+enrich_prompt_notebooklm.txt
+# Ngoai le: ban enrich MAU trong Sample Data/ duoc commit (data giao kem)
+!Sample Data/enrich_data.jsonl
+
+# === Node.js ===
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# === IDE ===
+.vscode/
+.vs/
+.idea/
+*.swp
+*.swo
+.$*.drawio.bkp
+
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Logs ===
+*.log
+logs/
+
+# === Model cache (quá nặng) ===
+.cache/
+
+# === Delivery output (goi giao hang, sinh lai duoc) ===
+/delivery/
+
+seed_source/MANIFEST.json
+seed_source/seed_data.py
+seed_source/seed.bat
+seed_source/backend/.env.example
+seed_source/backend/requirements.txt
+seed_source/backend/app/config.py
+seed_source/backend/app/logging_config.py
+seed_source/backend/app/chunking/chunker.py
+seed_source/backend/app/indexing/base.py
+seed_source/backend/app/models/schemas.py
+seed_source/backend/app/pipelines/document_pipeline.py
+seed_source/backend/app/providers/cohere_provider.py
+seed_source/backend/app/providers/embedding_provider.py
+seed_source/backend/app/providers/gemini_provider.py
+seed_source/backend/app/providers/groq_provider.py
+seed_source/backend/app/providers/huggingface_embedding.py
+seed_source/backend/app/providers/llm_factory.py
+seed_source/backend/app/providers/llm_provider.py
+seed_source/backend/app/providers/mistral_provider.py
+seed_source/backend/app/providers/ollama_provider.py
+seed_source/backend/app/storage/vector_store.py
+seed_source/data/seed/35_2024_QH15_588811.pdf
+seed_source/data/seed/36_2024_QH15_444251.pdf
+seed_source/data/seed/38_2024_TT-BGTVT_622477.pdf
+seed_source/data/seed/168_2024_ND-CP_619502.pdf

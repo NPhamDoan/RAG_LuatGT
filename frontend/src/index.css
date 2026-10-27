@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/* Hallmark · genre: modern-minimal · theme: custom (light-teal-technical)
+ * paper: light (L > 85%) · display: grotesk-sans · accent: cool (teal ~185°)
+ * vibe: "clean technical utility — teal signal light"
+ */
+
+@theme {
+  /* Paper — warm white with barely-there blue */
+  --color-surface: oklch(98.5% 0.004 240);
+  --color-surface-2: oklch(96% 0.006 240);
+  --color-surface-3: oklch(93% 0.008 240);
+  --color-border: oklch(88% 0.012 240);
+  --color-border-focus: oklch(55% 0.14 185);
+
+  /* Text */
+  --color-text: oklch(18% 0.02 240);
+  --color-text-muted: oklch(48% 0.02 240);
+
+  /* Accent — teal, punchy but not neon */
+  --color-accent: oklch(52% 0.14 185);
+  --color-accent-hover: oklch(46% 0.14 185);
+  --color-accent-subtle: oklch(92% 0.04 185);
+
+  /* Semantic */
+  --color-danger: oklch(55% 0.2 25);
+  --color-warning: oklch(62% 0.15 80);
+  --color-success: oklch(52% 0.14 155);
+
+  /* Typography */
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-body: "Space Grotesk", system-ui, sans-serif;
+}
+
+/* === Base === */
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-2);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+/* === Focus visible === */
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* === Markdown content === */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+.markdown-content h1 { font-size: 1.6rem; }
+.markdown-content h2 { font-size: 1.35rem; }
+.markdown-content h3 { font-size: 1.15rem; }
+.markdown-content p { margin-bottom: 0.75em; line-height: 1.75; font-size: 1rem; }
+.markdown-content ul, .markdown-content ol {
+  margin-left: 1.5em;
+  margin-bottom: 0.75em;
+}
+.markdown-content li { margin-bottom: 0.25em; }
+.markdown-content code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-surface-3);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+.markdown-content strong {
+  font-weight: 600;
+  color: var(--color-accent);
+}

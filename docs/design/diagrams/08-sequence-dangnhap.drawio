@@ -1,0 +1,25 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="sequence-dangnhap" id="seqauth">
+    <mxGraphModel dx="800" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" math="0" shadow="0" defaultFontFamily="Segoe UI">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="ll_admin" value="Admin" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="40" y="30" width="120" height="410" as="geometry" /></mxCell>
+        <mxCell id="ll_fe" value="FE (frontend)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="260" y="30" width="120" height="410" as="geometry" /></mxCell>
+        <mxCell id="ll_be" value="BE (backend)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="480" y="30" width="120" height="410" as="geometry" /></mxCell>
+
+        <mxCell id="altf" value="alt  [đúng / sai]" style="shape=umlFrame;whiteSpace=wrap;html=1;width=110;height=26;fillColor=none;strokeColor=#999999;fontSize=10;fontStyle=2;fontFamily=Segoe UI;verticalAlign=top;align=left;" vertex="1" parent="1"><mxGeometry x="240" y="225" width="380" height="165" as="geometry" /></mxCell>
+        <mxCell id="divider" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="240" y="332" as="sourcePoint" /><mxPoint x="620" y="332" as="targetPoint" /></mxGeometry></mxCell>
+
+        <mxCell id="m1" value="nhập mật khẩu" style="html=1;endArrow=block;endFill=1;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="100" y="100" as="sourcePoint" /><mxPoint x="320" y="100" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m2" value="gửi yêu cầu đăng nhập" style="html=1;endArrow=block;endFill=1;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="320" y="140" as="sourcePoint" /><mxPoint x="540" y="140" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m3" value="so mật khẩu với hash" style="html=1;endArrow=block;endFill=1;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="175" as="sourcePoint" /><mxPoint x="540" y="205" as="targetPoint" /><Array as="points"><mxPoint x="620" y="175" /><mxPoint x="620" y="205" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="m4" value="trả token ký HMAC có hạn" style="html=1;endArrow=open;dashed=1;endFill=0;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="260" as="sourcePoint" /><mxPoint x="320" y="260" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m5" value="lưu token, mở khu Quản lý" style="html=1;endArrow=block;endFill=1;startArrow=none;strokeColor=#333333;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="320" y="295" as="sourcePoint" /><mxPoint x="320" y="322" as="targetPoint" /><Array as="points"><mxPoint x="400" y="295" /><mxPoint x="400" y="322" /></Array></mxGeometry></mxCell>
+        <mxCell id="m6" value="401 kèm trễ chống dò" style="html=1;endArrow=open;dashed=1;endFill=0;startArrow=none;strokeColor=#b85450;fontSize=10;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="540" y="362" as="sourcePoint" /><mxPoint x="320" y="362" as="targetPoint" /></mxGeometry></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
