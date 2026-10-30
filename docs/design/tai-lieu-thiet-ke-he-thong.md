@@ -779,8 +779,8 @@ Bảng mô tả các thành phần trong sơ đồ kiến trúc:
 | Route đăng nhập / hỏi-đáp / văn bản | Các endpoint backend |
 | Kiểm tra token | Chặn thao tác ghi khi thiếu token hợp lệ |
 | Xử lý hỏi-đáp | Điều phối gating + tổng hợp |
-| Tìm kiếm lai (vector + BM25 + RRF) | Chiến lược truy hồi tùy chọn; không có trong nhánh `main` mặc định |
-| Xử lý nạp văn bản / Bộ cắt / Làm giàu | Pipeline lập chỉ mục; làm giàu là module tùy chọn |
+| Tìm kiếm lai (vector + BM25 + RRF) | Chiến lược truy hồi lai, chọn qua cấu hình `RETRIEVAL_STRATEGY=hybrid` |
+| Xử lý nạp văn bản / Bộ cắt / Làm giàu | Pipeline lập chỉ mục; làm giàu là bước index tùy chọn bật qua `INDEX_STEPS=enrich` |
 | Embedding e5 / ChromaDB | Sinh vector và lưu trữ |
 | Bộ chọn LLM | Chọn mô hình ngôn ngữ theo cấu hình |
 
@@ -871,10 +871,10 @@ Bảng mô tả các lớp trong sơ đồ:
 | QueryPipeline | Điều phối xử lý câu hỏi |
 | DocumentPipeline | Điều phối lập chỉ mục văn bản |
 | RetrievalStrategy (giao diện – interface) | Trừu tượng hóa chiến lược truy hồi |
-| VectorStrategy / HybridStrategy | Hiện thực truy hồi vector; HybridStrategy là module lai tùy chọn, không có trên `main` |
+| VectorStrategy / HybridStrategy | VectorStrategy tìm theo cosine; HybridStrategy tìm lai vector + BM25 + RRF |
 | VectorStore | Lưu và truy vấn vector trên ChromaDB |
 | Chunker | Cắt văn bản theo Điều |
-| EnrichStep | Module làm giàu tùy chọn, không có trên `main` |
+| EnrichStep | Bước làm giàu lúc lập chỉ mục (bật qua `INDEX_STEPS=enrich`) |
 | LLMProvider (giao diện – interface) | Trừu tượng hóa mô hình ngôn ngữ |
 
 ## 7.3 Đặc tả lớp
@@ -986,8 +986,9 @@ Bảng mô tả các lớp trong sơ đồ:
 |---|---|---|---|
 | RetrievalStrategy | — | search(query_vector, k, query_text) | Giao diện trừu tượng cho mọi chiến lược truy hồi |
 | VectorStrategy | _store: VectorStore | search(...) | Gọi tìm kiếm vector theo độ tương đồng cosine |
+| HybridStrategy | _store, _bm25, _data_version | search(...) | Tìm lai: gộp xếp hạng vector và BM25 bằng RRF |
 
-`HybridStrategy` là module mở rộng được thiết kế cho tìm kiếm lai vector + BM25 + RRF. Tệp này không có trên nhánh `main`; chỉ được dùng khi module tương ứng được đưa vào bản giao và cấu hình `RETRIEVAL_STRATEGY=hybrid`.
+`HybridStrategy` hiện thực tìm kiếm lai vector + BM25 + RRF. Chọn chiến lược qua `RETRIEVAL_STRATEGY` trong `.env` (`vector` hoặc `hybrid`); hàm `load_strategy(name, store)` nạp động lớp tương ứng lúc khởi động. BM25 (Okapi, k1=1.5, b=0.75) và RRF (k=60) nằm trong chính `hybrid_strategy.py`; RRF chỉ dùng để xếp hạng, còn điểm trả về vẫn là cosine để không phá ngưỡng lọc (gating).
 
 ### 7.3.7 Các lớp ngữ cảnh và bước mở rộng
 
@@ -1002,7 +1003,7 @@ Bảng mô tả các lớp trong sơ đồ:
 | IndexStep | name | process(ctx) | Giao diện cho bước chạy giữa cắt đoạn và sinh vector |
 | BaseIndexStep | name="base" | process(ctx) | Lớp cơ sở cho bước lập chỉ mục |
 
-Các module cụ thể như chuẩn hóa, kiểm chứng hoặc làm giàu chỉ được nạp khi tệp tồn tại và tên module có trong cấu hình. Nhánh `main` hiện chỉ chứa khung mở rộng, chưa chứa `EnrichStep` cụ thể.
+Các bước cụ thể được nạp khi tên module có trong cấu hình (`QUERY_STEPS` / `INDEX_STEPS`); step bật nhưng không có tệp sẽ được bỏ qua (ghi WARN). Bước làm giàu `EnrichStep` (`indexing/enrich_step.py`) và bộ nhập/xuất `enrich_io.py` đã có sẵn; các bước chuẩn hóa câu không dấu và kiểm chứng chéo là hướng mở rộng (xem mục 16.6).
 
 ### 7.3.8 Các lớp dữ liệu và schema
 
@@ -1090,9 +1091,9 @@ Hàm `llm_factory` dùng `Settings.resolve_llm()` để tạo đúng lớp provi
 
 **Vấn đề:** Cần đổi thuật toán tìm kiếm (vector thuần ↔ lai vector+BM25) mà không sửa phần điều phối.
 
-**Giải pháp:** Định nghĩa giao diện `RetrievalStrategy`; `VectorStrategy` hiện thực trong lõi, còn `HybridStrategy` hiện thực trong module tùy chọn. Hàm `load_strategy(name, store)` nạp lớp theo cấu hình khi tệp module tồn tại.
+**Giải pháp:** Định nghĩa giao diện `RetrievalStrategy`; `VectorStrategy` và `HybridStrategy` là hai hiện thực. Hàm `load_strategy(name, store)` nạp lớp theo cấu hình lúc khởi động.
 
-**Các thành phần tham gia:** `RetrievalStrategy` (giao diện – interface), `VectorStrategy`, `HybridStrategy` (tùy chọn), `QueryPipeline` (lớp sử dụng – client).
+**Các thành phần tham gia:** `RetrievalStrategy` (giao diện – interface), `VectorStrategy`, `HybridStrategy`, `QueryPipeline` (lớp sử dụng – client).
 
 **Cách triển khai:** `QueryPipeline` chỉ gọi `self._retrieval.search(...)`, không biết thuật toán cụ thể; chọn lớp qua `RETRIEVAL_STRATEGY` trong `.env`.
 
@@ -1331,8 +1332,6 @@ Màn hình chính cho người dùng tra cứu. Gồm ô nhập câu hỏi ở d
 
 ![Giao diện Trang Chat](screenshots/09-1-chat.png)
 
-> *Ảnh chụp màn hình sẽ được bổ sung khi có bản chạy thực tế.*
-
 ### 9.1.2 Trang Quản lý
 
 Màn hình dành cho admin (sau khi đăng nhập). Gồm biểu mẫu tải lên văn bản (chọn file PDF/TXT và nhập thông tin mô tả: số hiệu, tên, ngày ban hành/hiệu lực, cơ quan, loại), bảng liệt kê các văn bản đã nạp (số hiệu, tên, loại, số đoạn) kèm nút sửa và xóa cho từng dòng.
@@ -1341,8 +1340,6 @@ Màn hình dành cho admin (sau khi đăng nhập). Gồm biểu mẫu tải lê
 
 ![Giao diện Trang Quản lý](screenshots/09-2-quanly.png)
 
-> *Ảnh chụp màn hình sẽ được bổ sung khi có bản chạy thực tế.*
-
 ### 9.1.3 Trang Đăng nhập
 
 Màn hình xác thực admin, gồm ô nhập mật khẩu và nút đăng nhập. Nhập đúng mật khẩu sẽ mở khu Quản lý; nhập sai hiển thị thông báo lỗi.
@@ -1350,8 +1347,6 @@ Màn hình xác thực admin, gồm ô nhập mật khẩu và nút đăng nhậ
 **Hình 9-3. Giao diện Trang Đăng nhập**
 
 ![Giao diện Trang Đăng nhập](screenshots/09-3-dangnhap.png)
-
-> *Ảnh chụp màn hình sẽ được bổ sung khi có bản chạy thực tế.*
 
 **Kiểm tra dữ liệu đầu vào:**
 
@@ -1406,7 +1401,11 @@ POST /api/query
 POST /api/documents   (multipart/form-data)
 file: <PDF/TXT>
 metadata: {"soHieu":"36/2024/QH15","tenVanBan":"...","ngayBanHanh":"2024-06-27","ngayHieuLuc":"2025-01-01","coQuanBanHanh":"Quốc hội","loaiVanBan":"Luật"}
+enrich_mode: none | auto | manual   (tùy chọn; mặc định none)
+enrich_file: <TXT>                   (bắt buộc khi enrich_mode=manual)
 ```
+
+Tham số `enrich_mode` chọn cách làm giàu đoạn lúc nạp: `none` (mặc định, không làm giàu), `auto` (gọi LLM sinh câu hỏi đời thường gắn vào phần chữ để embed), hoặc `manual` (ghép dữ liệu làm giàu từ `enrich_file` dạng JSONL). Dù chế độ nào, nội dung đoạn gốc lưu trong kho vẫn giữ nguyên để trích dẫn sạch.
 
 #### Dữ liệu trả về (Response)
 
@@ -1528,6 +1527,12 @@ POST /api/auth/login
 | 400 | Hệ thống chưa cấu hình mật khẩu admin |
 | 401 | Sai mật khẩu (kèm trễ 1 giây chống dò) |
 
+### API: GET /api/documents/enrich-export và POST /api/documents/enrich-export-upload
+
+**Mục đích:** Tiện ích hỗ trợ làm giàu đoạn bằng công cụ ngoài. `GET /enrich-export?so_hieu=...` xuất các đoạn của một văn bản đã nạp ra tệp `.txt` (kèm câu nhắc) để điền phần làm giàu. `POST /enrich-export-upload` cắt đoạn cho một tệp PDF/TXT **chưa nạp** rồi xuất tệp `.txt` tương tự.
+
+**Xác thực:** Có (admin). **Trả về:** tệp văn bản đính kèm (header `X-Chunk-Count` = số đoạn); 400 nếu số hiệu không tồn tại hoặc tệp không hợp lệ.
+
 ## 9.3 Giao diện với hệ thống bên ngoài
 
 | Hệ thống | Giao diện | Mục đích |
@@ -1544,7 +1549,7 @@ POST /api/auth/login
 - **Mục tiêu thời gian:** sau khi mô hình embedding đã được nạp, bước truy hồi ≤ 2 giây và toàn bộ yêu cầu hỏi–đáp ≤ 10 giây khi dùng dịch vụ LLM cloud trong điều kiện bình thường. Đây là mục tiêu thiết kế, cần đo lại bằng bộ đánh giá hiệu năng.
 - Sinh vector nhúng chạy cục bộ; lần đầu tải mô hình (~2GB) nên khởi động chậm, sau đó nhanh.
 - Tìm kiếm vector trên ChromaDB dùng chỉ mục xấp xỉ láng giềng gần (HNSW) với độ đo cosine.
-- Giới hạn đưa vào câu nhắc (prompt): tối đa 6 đoạn, mỗi đoạn 2000 ký tự, để kiểm soát thời gian và chi phí.
+- Giới hạn đưa vào câu nhắc (prompt): tối đa 6 đoạn, mỗi đoạn 5000 ký tự, để kiểm soát thời gian và chi phí.
 - Thời gian chờ (timeout) gọi mô hình ngôn ngữ cấu hình được (mặc định vài chục giây tùy nhà cung cấp).
 
 ## 10.2 Khả năng mở rộng
@@ -1691,7 +1696,7 @@ backend/app/
 
 Kiểm thử được chia thành ba mức: kiểm thử đơn vị (unit test), kiểm thử tích hợp (integration test) và kiểm thử toàn hệ thống (system test). Các kiểm thử tự động dùng mô hình giả (fake/mock) và ChromaDB trong bộ nhớ để không cần tải mô hình 2GB hoặc gọi API thật.
 
-Trong thư mục `backend/tests/` hiện có **14 hàm kiểm thử tự động**. Tuy nhiên, bộ test chưa được chạy lại trên môi trường hiện tại vì môi trường ảo cũ đang trỏ tới Python 3.14 đã bị gỡ. Cần tạo lại `.venv` bằng Python 3.11, cài `requirements-dev.txt`, sau đó chạy `python -m pytest` trước khi điền kết quả PASS/FAIL chính thức.
+Trong thư mục `backend/tests/` hiện có **44 hàm kiểm thử tự động** trải trên 7 tệp. Tuy nhiên, bộ test chưa được chạy lại trên môi trường hiện tại vì thư mục môi trường ảo (`.venv`) chưa được tạo lại. Cần tạo `.venv` bằng Python 3.11, cài `requirements-dev.txt`, sau đó chạy `python -m pytest` trước khi điền kết quả PASS/FAIL chính thức.
 
 ## 13.2 Kiểm thử đơn vị (Unit Test)
 
@@ -1699,13 +1704,16 @@ Trong thư mục `backend/tests/` hiện có **14 hàm kiểm thử tự động
 |---|---:|---|
 | `test_chunker.py` | 4 | Cắt theo Điều, cắt theo kích thước khi không có Điều, cắt Điều dài, xử lý văn bản rỗng |
 | `test_vector_store.py` | 2 | Thêm/tìm/xóa đoạn bằng vector, tìm trên kho rỗng |
+| `test_enrich_io.py` | 8 | Xuất/nhập dữ liệu làm giàu theo JSONL, bắt lỗi nhiều văn bản, vòng xuất–nhập khớp seq |
 
 ## 13.3 Kiểm thử tích hợp (Integration Test)
 
 | Tệp kiểm thử | Số hàm | Nội dung |
 |---|---:|---|
-| `test_query_pipeline.py` | 5 | Không có kết quả, hai mức lọc ngưỡng, tổng hợp với độ tin cậy trung bình/cao, cơ chế dự phòng khi mô hình lỗi |
+| `test_query_pipeline.py` | 6 | Không có kết quả, hai mức lọc ngưỡng, tổng hợp với độ tin cậy trung bình/cao, cơ chế dự phòng khi mô hình lỗi |
 | `test_document_pipeline.py` | 3 | Giữ hành vi khi không có bước mở rộng, làm giàu dữ liệu nhúng nhưng giữ đoạn gốc, bỏ qua module mở rộng bị thiếu |
+| `test_hybrid_search.py` | 11 | Bỏ dấu + tách token, BM25 khớp chính xác, hybrid cứu exact-match, điểm trả về vẫn là cosine, cache BM25 theo `data_version` |
+| `test_enrich_step.py` | 10 | Làm giàu chỉ sửa text để embed, lỗi LLM giữ đoạn gốc, chọn LLM riêng từ `.env`, làm giàu từ nguồn file |
 
 ## 13.4 Kiểm thử toàn hệ thống (System Test)
 
@@ -1857,8 +1865,8 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 
 | Loại kiểm thử | Số hàm/kịch bản đã có | Kết quả hiện tại | Việc còn lại |
 |---|---:|---|---|
-| Kiểm thử đơn vị | 6 hàm | Chưa chạy lại | Tạo lại `.venv` và chạy pytest |
-| Kiểm thử tích hợp | 8 hàm | Chưa chạy lại | Chạy pytest; bổ sung test API quản lý văn bản/auth |
+| Kiểm thử đơn vị | 14 hàm (chunker, vector_store, enrich_io) | Chưa chạy lại | Tạo `.venv` và chạy pytest |
+| Kiểm thử tích hợp | 30 hàm (query/document pipeline, hybrid, enrich) | Chưa chạy lại | Chạy pytest; bổ sung test API quản lý văn bản/auth |
 | Kiểm thử toàn hệ thống | 1 kịch bản dự kiến | Chưa chạy | Khởi động ứng dụng và thực hiện end-to-end |
 
 ---
@@ -2015,9 +2023,11 @@ Bảng mô tả các nút triển khai:
 
 ## 16.6 Hướng phát triển
 
-- Chuẩn hóa câu không dấu trước khi tìm kiếm.
-- Làm giàu đoạn lúc lập chỉ mục + kiểm chứng chéo bằng mô hình thứ hai.
+- Chuẩn hóa câu không dấu trước khi tìm kiếm (thêm bước query `before_retrieval`).
+- Kiểm chứng chéo câu trả lời bằng mô hình thứ hai (thêm bước query `after_answer`, dùng provider verify đã khai báo sẵn).
 - Bổ sung xem toàn văn Điều, quản lý người dùng khi cần.
+
+Làm giàu đoạn lúc lập chỉ mục (`EnrichStep`) và tìm kiếm lai vector + BM25 (`HybridStrategy`) đã được hiện thực và bật qua cấu hình, không còn là hướng phát triển.
 
 ---
 
@@ -2074,19 +2084,17 @@ Lược đồ bản ghi đoạn và từ điển dữ liệu tại chương 8.3�
 
 # PHỤ LỤC E – TEST CASE ĐẦY ĐỦ
 
-Mười test case (TC-001 đến TC-010) tại chương 13.5 phủ FR-01 đến FR-11. Bộ kiểm thử hiện có 14 hàm trong `backend/tests/`; các ca còn thiếu được ghi rõ trạng thái để bổ sung sau khi tạo lại môi trường ảo.
+Mười test case (TC-001 đến TC-010) tại chương 13.5 phủ FR-01 đến FR-11. Bộ kiểm thử hiện có 44 hàm trên 7 tệp trong `backend/tests/`; các ca còn thiếu được ghi rõ trạng thái để bổ sung sau khi tạo lại môi trường ảo.
 
 # PHỤ LỤC F – GIAO DIỆN HỆ THỐNG
 
-Mô tả chi tiết các màn hình tại chương 9.1. Ảnh chụp màn hình sẽ được bổ sung khi có bản chạy thực tế, đặt trong thư mục `docs/design/screenshots/` với tên tương ứng:
+Mô tả chi tiết các màn hình tại chương 9.1. Ảnh chụp màn hình các màn hình chính được đặt trong thư mục `docs/design/screenshots/` với tên tương ứng:
 
 | Màn hình | Hình | Tệp ảnh |
 |---|---|---|
 | Trang Chat | Hình 9-1 | `screenshots/09-1-chat.png` |
 | Trang Quản lý | Hình 9-2 | `screenshots/09-2-quanly.png` |
 | Trang Đăng nhập | Hình 9-3 | `screenshots/09-3-dangnhap.png` |
-
-Khi có ảnh, chỉ cần đặt đúng tên tệp vào thư mục trên rồi tạo lại file Word; các vị trí "Hình 9-x" trong chương 9.1 sẽ tự hiển thị ảnh.
 
 # PHỤ LỤC G – CẤU TRÚC MÃ NGUỒN
 
