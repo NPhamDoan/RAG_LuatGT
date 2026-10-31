@@ -1,0 +1,14 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "title": "Bảng số test per-file ở mục 9 có 4/7 con số sai so với số hàm test_ thực tế",
+      "file": ".kiro/steering/project-kb.md",
+      "location": "Mục 9 (Setup & Run) — dòng 'Bố cục tests/'",
+      "evidence": "grep '^\\s*def test_' trong backend/tests/: test_query_pipeline.py = 6 (KB nói 5), test_hybrid_search.py = 10 (KB nói 11), test_enrich_step.py = 9 (KB nói 8), test_enrich_io.py = 5 (KB nói 6). Ba file còn lại khớp (chunker 4, vector_store 2, document_pipeline 3). Tổng = 39 vẫn đúng do bù trừ.",
+      "consequence": "Người đọc KB tin sai số lượng test của từng module; brief yêu cầu con số khớp số hàm test_ trong tests/.",
+      "correction": "Sửa per-file thành: test_query_pipeline.py (6), test_hybrid_search.py (10), test_enrich_step.py (9), test_enrich_io.py (5); giữ nguyên 3 file kia và tổng 39."
+    }
+  ],
+  "reviewDoc": "h:\\Github\\RAG_LuatGT\\.agents\\tasks\\update-kb\\review.md"
+}
