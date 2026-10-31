@@ -21,8 +21,11 @@ class HuggingFaceEmbedding(EmbeddingProvider):
     Model e5 yêu cầu prefix "query: " (câu hỏi) / "passage: " (document).
     """
 
-    def __init__(self, model_name: str = "intfloat/multilingual-e5-large"):
+    def __init__(
+        self, model_name: str = "intfloat/multilingual-e5-large", dimension: int = 1024
+    ):
         self._model_name = model_name
+        self._dimension = dimension
         self._model: SentenceTransformer | None = None
         self._load_lock = threading.Lock()
 
@@ -42,7 +45,7 @@ class HuggingFaceEmbedding(EmbeddingProvider):
         return self._model
 
     def get_dimension(self) -> int:
-        return 1024
+        return self._dimension
 
     async def embed_text(self, text: str, prefix: str = "query: ") -> list[float]:
         """Embed 1 text (mặc định prefix query)."""

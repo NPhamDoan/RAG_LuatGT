@@ -1,4 +1,4 @@
-"""Khung IndexStep — mỗi phase index-time (vd Phase 4 enrich) là một step module ở đây.
+"""Khung IndexStep — mỗi bước lập chỉ mục (vd enrich) là một step module ở đây.
 
 Chạy giữa bước chunk và embed trong document_pipeline. Điểm móc:
 - process(ctx): sửa `ctx.embed_texts` (text dùng để EMBED).
@@ -7,7 +7,7 @@ QUAN TRỌNG: step CHỈ đổi text-để-embed. `chunk.text` gốc vẫn đư�
 hiển thị/trích dẫn — enrich giúp tăng recall mà không làm bẩn nội dung luật hiển thị.
 
 Nạp động qua `load_index_steps` (config `INDEX_STEPS`). Step vắng file → bỏ qua.
-Quy ước golden rule: step tự chứa logic + prompt + config key, không sửa file lõi.
+Mỗi step tự chứa logic + prompt + config key, không sửa file lõi.
 """
 
 from __future__ import annotations
@@ -70,7 +70,7 @@ class BaseIndexStep:
         """Thông tin step tự khai báo để ghi vào seed manifest (vd model dùng).
 
         Mặc định rỗng. Step override nếu muốn lộ chi tiết — lõi gộp vào manifest
-        mà KHÔNG cần biết step cụ thể là gì (giữ golden rule: lõi không phụ thuộc phase).
+        mà KHÔNG cần biết step cụ thể là gì (lõi không phụ thuộc step).
         """
         return {}
 

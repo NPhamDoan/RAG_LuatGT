@@ -52,8 +52,6 @@ export interface DocumentMetadata {
   seedEnrichModel?: string;
   seedRetrieval?: string;
   seedEmbedding?: string;
-  seedGitBranch?: string;
-  seedGitCommit?: string;
 }
 
 /** Response phân trang danh sách văn bản. */

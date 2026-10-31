@@ -1,14 +1,11 @@
-"""Khung QueryStep — mỗi phase (3/4/5) là một step module trong thư mục này.
+"""Khung QueryStep — mỗi bước mở rộng xử lý câu hỏi là một step module trong thư mục này.
 
 Điểm móc:
-- before_retrieval(ctx): sửa câu hỏi / định tuyến trước khi search (Phase 3 normalize, Phase 5 help-intent).
-- after_answer(ctx):     hậu xử lý câu trả lời (Phase 4 cross-verify).
+- before_retrieval(ctx): sửa câu hỏi / định tuyến trước khi search (vd chuẩn hóa câu không dấu).
+- after_answer(ctx):     hậu xử lý câu trả lời (vd kiểm chứng chéo).
 
-Giao hàng: chỉ copy file step của phase đã bán. `load_steps` nạp động — step nào
-bật trong config mà file KHÔNG có sẽ bị bỏ qua (code vắng = không chạy).
-
-Quy ước để git merge không đụng nhau: mỗi step tự chứa logic + prompt + config key
-trong CHÍNH file của nó, không sửa file lõi dùng chung.
+`load_steps` nạp động theo tên trong cấu hình QUERY_STEPS — step bật mà không có file
+sẽ bị bỏ qua (ghi WARN). Mỗi step tự chứa logic + prompt + config key trong chính file của nó.
 """
 
 from __future__ import annotations
@@ -37,7 +34,6 @@ class StepDeps:
     primary_llm: "LLMProvider"
     embedding: "EmbeddingProvider"
     store: "VectorStore"
-    verify_llm: "LLMProvider | None" = None
 
 
 @runtime_checkable
@@ -46,18 +42,6 @@ class QueryStep(Protocol):
 
     async def before_retrieval(self, ctx: QueryContext) -> None: ...
     async def after_answer(self, ctx: QueryContext) -> None: ...
-
-
-class BaseStep:
-    """Base tiện lợi: step chỉ cần override hook nó dùng."""
-
-    name = "base"
-
-    async def before_retrieval(self, ctx: QueryContext) -> None:  # noqa: D401
-        return None
-
-    async def after_answer(self, ctx: QueryContext) -> None:
-        return None
 
 
 def load_steps(enabled: list[str], deps: StepDeps) -> list[QueryStep]:

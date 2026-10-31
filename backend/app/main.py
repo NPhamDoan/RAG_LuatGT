@@ -40,7 +40,9 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
 
     logger.info("Khởi tạo embedding provider (%s)...", settings.embedding_model)
-    embedding = HuggingFaceEmbedding(model_name=settings.embedding_model)
+    embedding = HuggingFaceEmbedding(
+        model_name=settings.embedding_model, dimension=settings.embedding_dimension
+    )
 
     primary_llm = create_primary_llm(settings)
 

@@ -1,15 +1,11 @@
-"""Test export/import enrich dạng text (Phase 4). Chỉ trên nhánh có Phase 4."""
+"""Test export enrich dạng text + parse import lọc theo số hiệu."""
 
 import json
 from pathlib import Path
 
 import pytest
 
-from app.indexing.enrich_io import (
-    apply_enrich_to_jsonl,
-    build_export_text,
-    parse_import_text,
-)
+from app.indexing.enrich_io import build_export_text, parse_import_filtered
 
 
 def _write_jsonl(tmp_path, rows) -> Path:
@@ -44,58 +40,23 @@ def test_export_unknown_document_raises(tmp_path):
         build_export_text(p, "KHONG-CO")
 
 
-def test_parse_import_text_extracts_soHieu_and_enrich():
+def test_parse_import_filtered_keeps_only_target_document():
     text = (
-        "### CHUNK seq=0 soHieu=A/2024 ###\n"
-        "TEXT_GOC:\nĐiều 1 A.\nENRICH:\nTÓM TẮT: abc\n### END ###\n"
-        "### CHUNK seq=1 soHieu=A/2024 ###\n"
-        "TEXT_GOC:\nĐiều 2 A.\nENRICH:\nTÓM TẮT: def\n### END ###\n"
-    )
-    so_hieu, by_seq = parse_import_text(text)
-    assert so_hieu == "A/2024"
-    assert by_seq[0].startswith("TÓM TẮT: abc")
-    assert by_seq[1].startswith("TÓM TẮT: def")
-
-
-def test_parse_import_rejects_multiple_documents():
-    text = (
-        "### CHUNK seq=0 soHieu=A/2024 ###\nENRICH:\nx\n### END ###\n"
+        "### CHUNK seq=0 soHieu=A/2024 ###\nENRICH:\nx0\n### END ###\n"
+        "### CHUNK seq=1 soHieu=A/2024 ###\nENRICH:\nx1\n### END ###\n"
         "### CHUNK seq=0 soHieu=B/2024 ###\nENRICH:\ny\n### END ###\n"
     )
+    enrich_by_seq, skipped = parse_import_filtered(text, "A/2024")
+    assert enrich_by_seq == {0: "x0", 1: "x1"}
+    assert skipped == 1                              # khối B/2024 bị bỏ qua
+
+
+def test_parse_import_filtered_no_matching_document_raises():
+    text = "### CHUNK seq=0 soHieu=B/2024 ###\nENRICH:\ny\n### END ###\n"
     with pytest.raises(ValueError):
-        parse_import_text(text)
+        parse_import_filtered(text, "A/2024")
 
 
-def test_parse_import_rejects_garbage():
+def test_parse_import_filtered_rejects_garbage():
     with pytest.raises(ValueError):
-        parse_import_text("khong co marker gi ca")
-
-
-def test_apply_updates_only_target_document(tmp_path):
-    p = _write_jsonl(tmp_path, _rows())
-    stats = apply_enrich_to_jsonl(p, "A/2024", {0: "E0", 1: "E1"})
-    assert stats["filled"] == 2 and stats["total_doc_rows"] == 2
-
-    rows = [json.loads(l) for l in p.open(encoding="utf-8")]
-    by = {(r["soHieu"], r["seq"]): r["enrich"] for r in rows}
-    assert by[("A/2024", 0)] == "E0"
-    assert by[("A/2024", 1)] == "E1"
-    assert by[("B/2024", 0)] == "GIU-NGUYEN-B"   # văn bản khác GIỮ NGUYÊN
-
-
-def test_apply_unknown_document_raises(tmp_path):
-    p = _write_jsonl(tmp_path, _rows())
-    with pytest.raises(ValueError):
-        apply_enrich_to_jsonl(p, "KHONG-CO", {0: "x"})
-
-
-def test_export_import_roundtrip(tmp_path):
-    """Export -> điền ENRICH -> parse -> apply: khớp đúng seq."""
-    p = _write_jsonl(tmp_path, _rows())
-    content, _ = build_export_text(p, "A/2024")
-    # Giả lập tool điền: thay 'ENRICH:\n' trống bằng nội dung.
-    filled = content.replace("ENRICH:\n\n", "ENRICH:\nNOI-DUNG\n")
-    so_hieu, by_seq = parse_import_text(filled)
-    stats = apply_enrich_to_jsonl(p, so_hieu, by_seq)
-    assert so_hieu == "A/2024"
-    assert stats["filled"] == 2
+        parse_import_filtered("khong co marker gi ca", "A/2024")

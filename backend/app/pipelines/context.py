@@ -12,7 +12,7 @@ from app.storage.vector_store import SearchResult
 class QueryContext:
     """Trạng thái dùng chung khi xử lý một câu hỏi.
 
-    Các step (Phase 3/4/5) đọc/ghi vào đây. Lõi orchestrator điều phối:
+    Các step đọc/ghi vào đây. Lõi orchestrator điều phối:
     before_retrieval → embed → retrieval → answer → after_answer.
     """
 
@@ -20,5 +20,5 @@ class QueryContext:
     query_vector: list[float] | None = None
     results: list[SearchResult] = field(default_factory=list)
     ket_qua: KetQuaTraLoi | None = None
-    # Step có thể set True + gán ket_qua để trả sớm (vd help-intent Phase 5).
+    # Step có thể set True + gán ket_qua để trả sớm (vd định tuyến help-intent).
     short_circuit: bool = False

@@ -525,13 +525,6 @@ function SeedInfo({ doc }: { doc: DocumentMetadata }) {
     { label: "Index steps", value: doc.seedIndexSteps || "—" },
     { label: "Retrieval", value: doc.seedRetrieval || "—" },
     { label: "Embedding", value: doc.seedEmbedding || "—" },
-    {
-      label: "Nhánh / commit",
-      value:
-        doc.seedGitBranch || doc.seedGitCommit
-          ? `${doc.seedGitBranch || "?"} @ ${doc.seedGitCommit || "?"}`
-          : "—",
-    },
   ];
 
   return (

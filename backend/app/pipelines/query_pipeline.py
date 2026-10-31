@@ -1,12 +1,11 @@
-"""Query Pipeline — orchestrator mỏng.
+"""Query Pipeline — orchestrator mỏng điều phối luồng xử lý câu hỏi.
 
 Luồng: before_retrieval(steps) → embed → retrieval strategy → answer (gating +
 synthesis + fallback) → after_answer(steps).
 
-Lõi này KHÔNG chứa logic riêng của phase nào. Mỗi phase cắm vào qua:
-- Retrieval strategy (Phase 1 vector / Phase 2 hybrid) — inject lúc khởi tạo.
-- QueryStep (Phase 3/4/5) — danh sách step inject lúc khởi tạo.
-Nhờ vậy thêm phase = thêm file module, không sửa file này.
+Phần có thể thay đổi được tách ra để inject lúc khởi tạo, không sửa file này:
+- Retrieval strategy (vector / hybrid) — quyết định cách tìm kiếm.
+- QueryStep — các bước mở rộng chạy trước retrieval / sau khi có câu trả lời.
 """
 
 from __future__ import annotations
@@ -47,11 +46,11 @@ class QueryPipeline:
         self._settings = settings or get_settings()
         self._steps = steps or []
 
-    def _trace(self, phase: str, msg: str, *args) -> None:
-        """Log trace cho một phase cụ thể — chỉ log nếu phase đó được bật (settings.log_phases)."""
-        phases = getattr(self._settings, "log_phases_set", {"all"})
-        if "all" in phases or phase in phases:
-            logger.info("[phase:%s] " + msg, phase, *args)
+    def _trace(self, scope: str, msg: str, *args) -> None:
+        """Log trace theo nhóm (scope) — chỉ log nếu scope đó được bật (settings.log_phases)."""
+        enabled = getattr(self._settings, "log_phases_set", {"all"})
+        if "all" in enabled or scope in enabled:
+            logger.info("[%s] " + msg, scope, *args)
 
     async def process_query(self, cau_hoi: str) -> KetQuaTraLoi:
         ctx = QueryContext(cau_hoi=cau_hoi)
@@ -62,7 +61,7 @@ class QueryPipeline:
             type(self._retrieval).__name__,
         )
 
-        # Steps trước retrieval (Phase 3 normalize, Phase 5 help-intent...).
+        # Steps trước retrieval (vd chuẩn hóa câu không dấu, định tuyến help-intent).
         for step in self._steps:
             self._trace(step.name, "→ before_retrieval")
             await step.before_retrieval(ctx)
@@ -78,10 +77,10 @@ class QueryPipeline:
         )
         self._trace("pipeline", "← retrieval: %d kết quả", len(ctx.results))
 
-        # Lõi Phase 1: gating + synthesis + fallback.
+        # Lọc ngưỡng + tổng hợp + dự phòng.
         ctx.ket_qua = await self._answer(ctx.cau_hoi, ctx.results)
 
-        # Steps sau khi có câu trả lời (Phase 4 cross-verify...).
+        # Steps sau khi có câu trả lời (vd kiểm chứng chéo).
         for step in self._steps:
             self._trace(step.name, "→ after_answer")
             await step.after_answer(ctx)
@@ -95,15 +94,26 @@ class QueryPipeline:
         return ctx.ket_qua
 
     async def _answer(self, cau_hoi: str, results: list[SearchResult]) -> KetQuaTraLoi:
-        """Gating + synthesis + fallback (hành vi Phase 1, giữ nguyên)."""
+        """Điều phối trả lời: lọc ngưỡng (gating) → tổng hợp (có dự phòng khi LLM lỗi)."""
+        # Gộp các mảnh của cùng một (soHieu, Điều) để tránh trích dẫn trùng. Dùng chung
+        # cho cả prompt lẫn citation nên số [n] trong câu trả lời vẫn khớp với chip.
+        results = self._dedupe_results(results) if results else []
+
+        ket_qua_som = self._gate(results)
+        if ket_qua_som is not None:
+            return ket_qua_som
+
+        do_tin_cay = self._calc_confidence(max(r.score for r in results))
+        return await self._synthesize(cau_hoi, results, do_tin_cay)
+
+    def _gate(self, results: list[SearchResult]) -> KetQuaTraLoi | None:
+        """Lọc theo ngưỡng tương đồng. Trả câu trả lời sớm nếu chưa đủ căn cứ, None nếu đủ.
+
+        Dưới ngưỡng tối thiểu / chưa đủ liên quan → KHÔNG gọi LLM (tránh bịa đặt).
+        """
         if not results:
             self._trace("pipeline", "gating: 0 kết quả → không tìm thấy")
             return self._no_results()
-
-        # Gộp các chunk cùng một (soHieu, Điều) — vốn là các mảnh của MỘT điều bị cắt
-        # nhỏ — để tránh trích dẫn trùng. Dùng chung cho cả prompt lẫn citation nên số
-        # [n] trong câu trả lời vẫn khớp với chip.
-        results = self._dedupe_results(results)
 
         max_score = max(r.score for r in results)
 
@@ -119,9 +129,13 @@ class QueryPipeline:
                 doTinCay="thấp",
             )
 
-        do_tin_cay = self._calc_confidence(max_score)
-        self._trace("pipeline", "gating: max_score=%.3f → synthesis (%d chunk, độ tin cậy=%s)", max_score, len(results), do_tin_cay)
+        return None
 
+    async def _synthesize(
+        self, cau_hoi: str, results: list[SearchResult], do_tin_cay: str
+    ) -> KetQuaTraLoi:
+        """Gọi LLM tổng hợp câu trả lời có trích dẫn; LLM lỗi → trả đoạn gốc (fallback)."""
+        self._trace("pipeline", "→ synthesis (%d chunk, độ tin cậy=%s)", len(results), do_tin_cay)
         try:
             prompt = self._build_synthesis_prompt(cau_hoi, results)
             response = await self._llm.generate(

@@ -124,7 +124,6 @@ async def list_documents(
 @router.get("/enrich-export", dependencies=[Depends(require_admin)])
 async def enrich_export(so_hieu: str) -> Response:
     """Xuất chunk của MỘT văn bản ra file .txt (kèm prompt) để enrich bằng tool ngoài."""
-    # Import lazy: module enrich_io chỉ có trên nhánh có Phase 4.
     from app.indexing.enrich_io import build_export_text, get_enrich_file_path
 
     try:

@@ -3,9 +3,10 @@
 Vì tool web thường không cho tải .json, ta dùng .txt dạng KHỐI có marker rõ ràng:
 mỗi chunk một khối, tool chỉ điền phần dưới "ENRICH:", giữ nguyên marker.
 
-Nguồn dữ liệu gốc là ENRICH_FILE (jsonl) hiện có — đã chứa soHieu/seq/text_goc cho
-mọi chunk. Export = lọc theo soHieu, dựng khối text. Import = parse khối, ghép enrich
-theo (soHieu, seq) vào lại jsonl chung (CHỈ cập nhật phần văn bản đó).
+- Export: dựng khối text cho các chunk của một văn bản (từ ENRICH_FILE jsonl có sẵn,
+  hoặc từ chunk vừa tạo lúc upload) để người dùng điền phần ENRICH.
+- Import: `parse_import_filtered` bóc {seq: enrich} cho đúng số hiệu → form Admin nạp
+  thẳng vào pipeline qua enrich_step.build_manual.
 """
 
 from __future__ import annotations
@@ -120,32 +121,6 @@ def _make_block(seq, so_hieu: str, text_goc: str, enrich: str) -> str:
     )
 
 
-def parse_import_text(text: str) -> tuple[str, dict[int, str]]:
-    """Parse text tool trả về → (soHieu, {seq: enrich}).
-
-    Lỗi nếu file chứa nhiều soHieu khác nhau (mỗi lần import 1 văn bản).
-    """
-    matches = _CHUNK_RE.findall(text)
-    if not matches:
-        raise ValueError("Không tìm thấy khối '### CHUNK ... ###' nào — sai định dạng file.")
-
-    so_hieu_set: set[str] = set()
-    enrich_by_seq: dict[int, str] = {}
-    for seq_str, so_hieu, body in matches:
-        so_hieu = so_hieu.strip()
-        so_hieu_set.add(so_hieu)
-        m = _ENRICH_RE.search(body)
-        enrich = m.group(1).strip() if m else ""
-        enrich_by_seq[int(seq_str)] = enrich
-
-    if len(so_hieu_set) != 1:
-        raise ValueError(
-            f"File chứa nhiều số hiệu khác nhau: {sorted(so_hieu_set)}. "
-            "Mỗi lần chỉ import một văn bản."
-        )
-    return so_hieu_set.pop(), enrich_by_seq
-
-
 def parse_import_filtered(text: str, expected_so_hieu: str) -> tuple[dict[int, str], int]:
     """Parse text, CHỈ lấy khối có soHieu == expected (cách lỏng).
 
@@ -173,43 +148,6 @@ def parse_import_filtered(text: str, expected_so_hieu: str) -> tuple[dict[int, s
     return enrich_by_seq, skipped
 
 
-def apply_enrich_to_jsonl(
-    jsonl_path: Path, so_hieu: str, enrich_by_seq: dict[int, str]
-) -> dict:
-    """Ghép enrich vào jsonl chung — CHỈ cập nhật dòng của so_hieu, giữ nguyên văn bản khác.
-
-    Trả thống kê: {matched, filled, missing_seq, total_doc_rows}.
-    """
-    rows = _read_jsonl(jsonl_path)
-    doc_seqs = {int(r["seq"]) for r in rows if str(r.get("soHieu", "")) == so_hieu}
-    if not doc_seqs:
-        raise ValueError(f"Số hiệu '{so_hieu}' không có trong hệ thống — không thể import.")
-
-    filled = 0
-    matched = 0
-    for r in rows:
-        if str(r.get("soHieu", "")) != so_hieu:
-            continue
-        seq = int(r["seq"])
-        if seq in enrich_by_seq:
-            matched += 1
-            val = enrich_by_seq[seq].strip()
-            if val:
-                r["enrich"] = val
-                filled += 1
-
-    _write_jsonl(jsonl_path, rows)
-    # seq trong file import nhưng không có chunk tương ứng → cảnh báo thừa.
-    extra_seqs = sorted(set(enrich_by_seq) - doc_seqs)
-    return {
-        "soHieu": so_hieu,
-        "total_doc_rows": len(doc_seqs),
-        "matched": matched,
-        "filled": filled,
-        "extra_seqs": extra_seqs[:10],
-    }
-
-
 def _read_jsonl(path: Path) -> list[dict]:
     if not path.is_file():
         raise FileNotFoundError(f"Không thấy file enrich: {path}")
@@ -220,9 +158,3 @@ def _read_jsonl(path: Path) -> list[dict]:
             if line:
                 rows.append(json.loads(line))
     return rows
-
-
-def _write_jsonl(path: Path, rows: list[dict]) -> None:
-    with path.open("w", encoding="utf-8") as f:
-        for r in rows:
-            f.write(json.dumps(r, ensure_ascii=False) + "\n")

@@ -1,4 +1,4 @@
-"""Phase 2 — Hybrid retrieval: vector + BM25 (Okapi) hợp nhất bằng RRF.
+"""Hybrid retrieval: vector + BM25 (Okapi) hợp nhất bằng RRF.
 
 Bắt được exact-match (số Điều, con số) mà vector search bỏ sót. Thứ tự kết quả
 theo RRF, nhưng ``score`` trả về vẫn là cosine similarity → gating/độ tin cậy ở
@@ -25,6 +25,11 @@ _RRF_K = 60
 _BM25_K1 = 1.5
 _BM25_B = 0.75
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+# Số ứng viên lấy từ mỗi bảng (vector/BM25) trước khi merge RRF: rộng hơn k để RRF có
+# đủ dữ liệu xếp hạng, nhưng có trần để không quét cả corpus.
+_CANDIDATE_POOL_MULTIPLIER = 4
+_CANDIDATE_POOL_MIN = 40
 
 
 def _remove_diacritics(text: str) -> str:
@@ -112,7 +117,7 @@ class HybridStrategy(RetrievalStrategy):
         count = self._store.count()
         if count == 0:
             return []
-        candidate_k = min(max(k * 4, 40), count)
+        candidate_k = min(max(k * _CANDIDATE_POOL_MULTIPLIER, _CANDIDATE_POOL_MIN), count)
 
         # --- Nhánh vector ---
         vec_results = await self._store.vector_search(query_vector, candidate_k)

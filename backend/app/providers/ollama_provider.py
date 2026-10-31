@@ -9,6 +9,7 @@ import re
 
 import httpx
 
+from app.providers._http_base import build_messages
 from app.providers.llm_provider import LLMProvider, LLMResponse
 
 logger = logging.getLogger(__name__)
@@ -40,10 +41,7 @@ class OllamaProvider(LLMProvider):
             return resp.json()
 
     async def generate(self, prompt: str, system_prompt: str = "") -> LLMResponse:
-        messages: list[dict] = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt})
+        messages = build_messages(prompt, system_prompt)
 
         payload: dict = {
             "model": self._model,

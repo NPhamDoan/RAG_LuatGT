@@ -1,8 +1,8 @@
 """Vector Store — ChromaDB storage thuần + primitives cho tầng retrieval.
 
 Chỉ lo lưu trữ & truy vấn vector cơ bản. Logic hybrid/BM25 nằm ở
-app/retrieval/hybrid_strategy.py (Phase 2). Store cung cấp:
-- vector_search: top-k theo cosine (Phase 1)
+app/retrieval/hybrid_strategy.py. Store cung cấp:
+- vector_search: top-k theo cosine
 - get_corpus / cosine_for_ids / count: primitives cho hybrid
 - data_version: tăng mỗi khi corpus đổi → strategy biết để rebuild cache
 """
@@ -60,7 +60,7 @@ class VectorStore:
     _SEED_FIELDS = (
         "seedVersion", "seedAt", "seedIndexSteps", "seedEnrichEnabled",
         "seedEnrichSource", "seedEnrichModel", "seedRetrieval",
-        "seedEmbedding", "seedGitBranch", "seedGitCommit",
+        "seedEmbedding",
     )
 
     @property
@@ -138,7 +138,7 @@ class VectorStore:
         logger.info("Upserted %d chunks (soHieu=%s)", len(ids), chunks[0].metadata.soHieu)
 
     async def vector_search(self, query_vector: list[float], k: int) -> list[SearchResult]:
-        """Phase 1 — top-k gần nhất theo cosine similarity."""
+        """Top-k gần nhất theo cosine similarity."""
         count = self._collection.count()
         if count == 0:
             return []
@@ -232,20 +232,14 @@ class VectorStore:
             embeddings = []
 
         new_metas: list[dict] = []
-        for m in metadatas:
-            nm = dict(m or {})
-            nm.update({k: v for k, v in updates.items() if v is not None})
-            new_metas.append(nm)
+        for old_meta in metadatas:
+            new_meta = dict(old_meta or {})
+            new_meta.update({k: v for k, v in updates.items() if v is not None})
+            new_metas.append(new_meta)
 
         new_so_hieu = updates.get("soHieu") or so_hieu
         if new_so_hieu != so_hieu:
-            # soHieu nằm trong id (`{soHieu}__dieu_...`) → thay tiền tố, giữ phần đuôi.
-            new_ids = [new_so_hieu + old_id[len(so_hieu):] for old_id in old_ids]
-            emb = [[float(x) for x in e] for e in embeddings]
-            self._collection.delete(ids=old_ids)
-            self._collection.upsert(
-                ids=new_ids, documents=documents, metadatas=new_metas, embeddings=emb
-            )
+            self._rename_so_hieu(so_hieu, new_so_hieu, old_ids, documents, new_metas, embeddings)
         else:
             self._collection.update(ids=old_ids, metadatas=new_metas)
 
@@ -254,6 +248,27 @@ class VectorStore:
             "Updated metadata %d chunk (soHieu %s -> %s)", len(old_ids), so_hieu, new_so_hieu
         )
         return len(old_ids)
+
+    def _rename_so_hieu(
+        self,
+        so_hieu: str,
+        new_so_hieu: str,
+        old_ids: list[str],
+        documents: list[str],
+        new_metas: list[dict],
+        embeddings,
+    ) -> None:
+        """Đổi soHieu: dựng lại id theo soHieu mới, tái dùng embedding đã lưu (không re-embed).
+
+        soHieu nằm trong id (`{soHieu}__dieu_...`) nên phải xóa id cũ rồi upsert id mới.
+        """
+        new_ids = [new_so_hieu + old_id[len(so_hieu):] for old_id in old_ids]
+        # embeddings là numpy array → ép về list[float] cho ChromaDB.
+        vectors = [[float(x) for x in e] for e in embeddings]
+        self._collection.delete(ids=old_ids)
+        self._collection.upsert(
+            ids=new_ids, documents=documents, metadatas=new_metas, embeddings=vectors
+        )
 
     async def exists(self, so_hieu: str) -> bool:
         """Kiểm tra văn bản đã tồn tại chưa."""

@@ -1,7 +1,7 @@
-"""RetrievalStrategy — interface cho tầng tìm kiếm (Phase 1 vector, Phase 2 hybrid...).
+"""RetrievalStrategy — interface cho tầng tìm kiếm (vector hoặc hybrid).
 
-Chọn strategy theo config `RETRIEVAL_STRATEGY`. Strategy nào không được ship (file
-không có) thì `load_strategy` sẽ báo lỗi rõ ràng — đúng tinh thần "code vắng = không chạy".
+Chọn strategy theo config `RETRIEVAL_STRATEGY`. `load_strategy` nạp động lớp tương ứng;
+strategy không có file sẽ báo lỗi rõ ràng.
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""Phase 4 — Enrich step (index-time): làm giàu chunk để tăng recall câu đời thường.
+"""Enrich step (lúc lập chỉ mục): làm giàu chunk để tăng recall câu hỏi đời thường.
 
 Với mỗi Điều luật, dùng LLM sinh phần BỔ SUNG (tóm tắt + từ khóa + câu hỏi đời thường)
 mà điều đó trả lời, rồi GẮN vào text-để-embed. Nhờ đó câu hỏi dân dã ("chạy nhanh trong
@@ -7,7 +7,7 @@ phố bị phạt sao?") khớp tốt hơn với điều luật văn phong pháp
 QUAN TRỌNG: chỉ đổi `ctx.embed_texts` — `chunk.text` gốc giữ nguyên để hiển thị/trích dẫn.
 LLM lỗi cho chunk nào → chunk đó giữ text gốc (không chặn cả quá trình index).
 
-File tự chứa prompt + logic (golden rule): không sửa file lõi. Chỉ đặt trên nhánh có Phase 4.
+Bật qua INDEX_STEPS=enrich. File tự chứa prompt + logic + config key, không sửa file lõi.
 """
 
 from __future__ import annotations
@@ -253,7 +253,7 @@ def build(deps: IndexDeps) -> EnrichStep:
     (vd chạy Ollama local để đỡ tốn/đỡ rate-limit Groq khi index nhiều chunk), đặt env:
       ENRICH_LLM_PROVIDER    = groq | ollama       (bỏ trống = dùng LLM chính)
       ENRICH_LLM_MODEL       = tên model (vd qwen3:8b / openai/gpt-oss-20b)
-      ENRICH_LLM_API_KEY     = (groq) key riêng; bỏ trống thì dùng PRIMARY_LLM_API_KEY
+      ENRICH_LLM_API_KEY     = (groq) key riêng; bỏ trống thì tái dùng GROQ_API_KEY
       ENRICH_OLLAMA_BASE_URL = (ollama) mặc định http://localhost:11434
       ENRICH_LLM_TIMEOUT     = giây (mặc định 60)
     """
@@ -295,9 +295,8 @@ def build_auto(deps: IndexDeps) -> EnrichStep:
     if provider == "groq":
         from app.providers.groq_provider import GroqProvider
 
-        api_key = cfg.enrich_llm_api_key.strip() or getattr(
-            deps.settings, "primary_llm_api_key", ""
-        )
+        # Key riêng cho enrich; trống thì tái dùng GROQ_API_KEY đã cấu hình (qua resolve_llm).
+        api_key = cfg.enrich_llm_api_key.strip() or deps.settings.resolve_llm("groq").api_key
         resolved_model = model or "openai/gpt-oss-20b"
         llm: LLMProvider = GroqProvider(api_key=api_key, model=resolved_model, timeout=timeout)
     elif provider == "ollama":

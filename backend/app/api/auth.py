@@ -46,22 +46,23 @@ def verify_password(password: str, stored: str) -> bool:
             "sha256", password.encode("utf-8"), bytes.fromhex(salt_hex), int(iter_s)
         )
         return hmac.compare_digest(dk.hex(), hash_hex)
+    # Bắt rộng CÓ CHỦ ĐÍCH: hash lưu sai định dạng → coi như không khớp, không crash.
     except Exception:
         return False
 
 
 # ---------- Token (HMAC ký + hạn) ----------
-def _b64e(raw: bytes) -> str:
+def _b64_encode(raw: bytes) -> str:
     return base64.urlsafe_b64encode(raw).decode().rstrip("=")
 
 
-def _b64d(s: str) -> bytes:
+def _b64_decode(s: str) -> bytes:
     return base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
 
 
 def create_token(secret: str, ttl: int) -> str:
     """Tạo token 'payload_b64.signature' — payload chứa role + exp."""
-    payload = _b64e(json.dumps({"role": "admin", "exp": int(time.time()) + ttl}).encode())
+    payload = _b64_encode(json.dumps({"role": "admin", "exp": int(time.time()) + ttl}).encode())
     sig = hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()
     return f"{payload}.{sig}"
 
@@ -73,8 +74,9 @@ def verify_token(token: str, secret: str) -> bool:
         expected = hmac.new(secret.encode(), payload_b64.encode(), hashlib.sha256).hexdigest()
         if not hmac.compare_digest(sig, expected):
             return False
-        data = json.loads(_b64d(payload_b64))
+        data = json.loads(_b64_decode(payload_b64))
         return data.get("role") == "admin" and data.get("exp", 0) >= int(time.time())
+    # Bắt rộng CÓ CHỦ ĐÍCH: token do client gửi, mọi dạng dị dạng/parse lỗi = từ chối.
     except Exception:
         return False
 

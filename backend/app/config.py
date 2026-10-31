@@ -55,7 +55,7 @@ class Settings(BaseSettings):
     llm_timeout: int = 30       # timeout cho provider cloud (Ollama dùng ollama_timeout)
 
     # ===== Chọn provider cho từng vai trò (chỉ điền tên) =====
-    primary_llm_provider: str = "groq"    # groq | mistral | cohere | ollama
+    primary_llm_provider: str = "groq"    # groq | mistral | cohere | gemini | ollama
     verify_llm_provider: str = "gemini"   # gemini | groq | mistral | cohere | ollama
 
     # ===== Auth admin (chỉ mật khẩu) =====
@@ -79,11 +79,10 @@ class Settings(BaseSettings):
     similarity_threshold_confident: float = 0.5
     confidence_high_threshold: float = 0.8
 
-    # Kiến trúc module/plugin — chọn phase khi giao hàng.
-    # Default 'vector' (Phase 1). Bản có Phase 2 đặt RETRIEVAL_STRATEGY=hybrid trong .env.
-    retrieval_strategy: str = "vector"   # vector (Phase 1) | hybrid (Phase 2)
-    query_steps: str = ""                # CSV query step, vd "normalize,verify" (Phase 3/4/5)
-    index_steps: str = ""                # CSV index step (index-time), vd "enrich" (Phase 4)
+    # Kiến trúc module/plugin — chọn cách tìm kiếm + các bước mở rộng qua .env.
+    retrieval_strategy: str = "vector"   # vector (cosine) | hybrid (vector + BM25 + RRF)
+    query_steps: str = ""                # CSV query step, vd "normalize,verify"
+    index_steps: str = ""                # CSV index step (lúc lập chỉ mục), vd "enrich"
 
     # Synthesis limits
     synthesis_max_chunks: int = 6
@@ -165,7 +164,7 @@ class Settings(BaseSettings):
     model_config = {
         "env_file": str(_ENV_FILE),
         "env_file_encoding": "utf-8",
-        # Bỏ qua env lạ (vd ENRICH_LLM_* của Phase 4 đọc riêng qua os.getenv) thay vì báo lỗi.
+        # Bỏ qua env lạ (vd ENRICH_LLM_* do enrich_step đọc riêng) thay vì báo lỗi.
         "extra": "ignore",
     }
 

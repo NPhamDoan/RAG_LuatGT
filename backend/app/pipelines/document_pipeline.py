@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import subprocess
 from datetime import datetime
 
 import pymupdf as fitz
@@ -18,24 +17,16 @@ from app.storage.vector_store import VectorStore
 logger = logging.getLogger(__name__)
 
 
-def _git_info() -> dict:
-    """Lấy nhánh + commit hiện tại (để truy ngược data thuộc delivery nào).
-
-    An toàn: không có git / không phải repo → trả rỗng, không làm hỏng index.
-    """
-    def _run(args: list[str]) -> str:
-        try:
-            out = subprocess.run(
-                ["git", *args], capture_output=True, text=True, timeout=5
-            )
-            return out.stdout.strip() if out.returncode == 0 else ""
-        except (OSError, subprocess.SubprocessError):
-            return ""
-
-    return {
-        "git_branch": _run(["rev-parse", "--abbrev-ref", "HEAD"]),
-        "git_commit": _run(["rev-parse", "--short", "HEAD"]),
-    }
+def _to_document_meta(metadata: DocumentMetadataInput) -> DocumentMetadata:
+    """Chuyển metadata nhập (API schema) → DocumentMetadata cho bộ cắt."""
+    return DocumentMetadata(
+        soHieu=metadata.soHieu,
+        tenVanBan=metadata.tenVanBan,
+        ngayBanHanh=metadata.ngayBanHanh,
+        ngayHieuLuc=metadata.ngayHieuLuc,
+        coQuanBanHanh=metadata.coQuanBanHanh,
+        loaiVanBan=metadata.loaiVanBan,
+    )
 
 
 class DocumentPipelineError(Exception):
@@ -89,73 +80,32 @@ class DocumentPipeline:
             filename, metadata.soHieu, len(file_content) / 1024,
         )
 
-        # 1. Validate size
-        if len(file_content) > self._max_file_size_bytes:
-            limit_mb = self._max_file_size_bytes / 1024 / 1024
-            raise DocumentPipelineError(
-                f"File vượt {limit_mb:.0f}MB ({len(file_content) / 1024 / 1024:.1f}MB)."
-            )
+        ext = self._validate_upload(file_content, filename)
 
-        # 2. Validate format
-        ext: str = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
-        if ext not in ("pdf", "txt"):
-            raise DocumentPipelineError(f"Định dạng '{ext}' không hỗ trợ. Chỉ PDF hoặc TXT.")
-
-        # 3. Check duplicate
-        exists: bool = await self._store.exists(metadata.soHieu)
+        exists = await self._store.exists(metadata.soHieu)
         if exists and not replace:
             raise DuplicateDocumentError(metadata.soHieu)
 
-        # 4. Parse
-        raw_text: str = self._parse(file_content, ext)
-        if not raw_text.strip():
-            raise DocumentPipelineError("Không extract được text (có thể là PDF scan).")
-
-        # 5. Chunk
-        base_meta: DocumentMetadata = DocumentMetadata(
-            soHieu=metadata.soHieu,
-            tenVanBan=metadata.tenVanBan,
-            ngayBanHanh=metadata.ngayBanHanh,
-            ngayHieuLuc=metadata.ngayHieuLuc,
-            coQuanBanHanh=metadata.coQuanBanHanh,
-            loaiVanBan=metadata.loaiVanBan,
-        )
-        chunks: list[Chunk] = self._chunker.chunk_document(raw_text, base_meta)
-        if not chunks:
-            raise DocumentPipelineError("Không tạo được chunk từ văn bản.")
+        chunks = self._parse_and_chunk(file_content, ext, metadata)
         logger.info("Đã chunk '%s': %d chunk.", metadata.soHieu, len(chunks))
 
-        # 6. Index steps (Phase 4 enrich...) — chỉ sửa text-để-embed, chunk.text gốc giữ nguyên.
-        #    override (từ form Admin: auto/manual/none) ưu tiên hơn step mặc định.
-        steps = self._index_steps if index_steps_override is None else index_steps_override
-        self._last_steps = steps  # để _seed_metadata ghi nhãn đúng lần nạp này
-        index_ctx = IndexContext(chunks=chunks, embed_texts=[c.text for c in chunks])
-        if steps:
-            logger.info("Chạy %d index step trên %d chunk...", len(steps), len(chunks))
-        for step in steps:
-            await step.process(index_ctx)
+        embed_texts = await self._run_index_steps(chunks, index_steps_override)
 
-        # 7. Embed (dùng embed_texts đã qua index steps)
-        logger.info(
-            "Bắt đầu embed %d chunk (lần đầu sẽ chậm do nạp model ~2GB)...", len(chunks)
-        )
-        vectors: list[list[float]] = await self._embedding.embed_batch(index_ctx.embed_texts)
+        logger.info("Bắt đầu embed %d chunk (lần đầu sẽ chậm do nạp model ~2GB)...", len(chunks))
+        vectors = await self._embedding.embed_batch(embed_texts)
         logger.info("Embed xong: %d vector.", len(vectors))
 
-        # 8. Replace nếu cần
         if exists and replace:
             await self._store.delete_by_so_hieu(metadata.soHieu)
 
-        # 9. Store (chunk.text gốc để hiển thị; vector đã enrich nếu có index step)
-        #    Gắn seed info PER-DOCUMENT vào metadata mỗi chunk → Admin hiển thị
-        #    "văn bản này nạp kiểu gì" cho TỪNG văn bản.
+        # Store: chunk.text GỐC để hiển thị/trích dẫn; vector đã enrich nếu có index step.
+        # Gắn seed info per-document để Admin biết "văn bản này nạp kiểu gì".
         await self._store.add_chunks(chunks, vectors, extra_metadata=self._seed_metadata())
 
         logger.info(
             "Indexed: soHieu=%s, tenVanBan=%s, chunks=%d",
             metadata.soHieu, metadata.tenVanBan, len(chunks),
         )
-
         return IndexingResult(
             soHieu=metadata.soHieu,
             tenVanBan=metadata.tenVanBan,
@@ -163,11 +113,52 @@ class DocumentPipeline:
             ngayIndex=datetime.now(),
         )
 
+    def _validate_upload(self, file_content: bytes, filename: str) -> str:
+        """Kiểm tra kích thước + định dạng. Trả về phần mở rộng đã chuẩn hóa (pdf/txt)."""
+        if len(file_content) > self._max_file_size_bytes:
+            limit_mb = self._max_file_size_bytes / 1024 / 1024
+            raise DocumentPipelineError(
+                f"File vượt {limit_mb:.0f}MB ({len(file_content) / 1024 / 1024:.1f}MB)."
+            )
+        ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+        if ext not in ("pdf", "txt"):
+            raise DocumentPipelineError(f"Định dạng '{ext}' không hỗ trợ. Chỉ PDF hoặc TXT.")
+        return ext
+
+    def _parse_and_chunk(
+        self, file_content: bytes, ext: str, metadata: DocumentMetadataInput
+    ) -> list[Chunk]:
+        """Đọc text từ file rồi cắt thành chunk theo Điều."""
+        raw_text = self._parse(file_content, ext)
+        if not raw_text.strip():
+            raise DocumentPipelineError("Không extract được text (có thể là PDF scan).")
+        chunks = self._chunker.chunk_document(raw_text, _to_document_meta(metadata))
+        if not chunks:
+            raise DocumentPipelineError("Không tạo được chunk từ văn bản.")
+        return chunks
+
+    async def _run_index_steps(
+        self, chunks: list[Chunk], index_steps_override: list[IndexStep] | None
+    ) -> list[str]:
+        """Chạy các index step (vd enrich) → trả danh sách text-để-embed.
+
+        Chỉ sửa text-để-embed; chunk.text gốc giữ nguyên. override (từ form Admin:
+        auto/manual/none) ưu tiên hơn step mặc định.
+        """
+        steps = self._index_steps if index_steps_override is None else index_steps_override
+        self._last_steps = steps  # để _seed_metadata ghi nhãn đúng lần nạp này
+        index_ctx = IndexContext(chunks=chunks, embed_texts=[c.text for c in chunks])
+        if steps:
+            logger.info("Chạy %d index step trên %d chunk...", len(steps), len(chunks))
+        for step in steps:
+            await step.process(index_ctx)
+        return index_ctx.embed_texts
+
     def _seed_metadata(self) -> dict:
         """Dựng seed info PER-DOCUMENT để gắn vào metadata mỗi chunk.
 
         Cho biết VĂN BẢN NÀY nạp kiểu gì: enrich bật/tắt, source/model, retrieval,
-        embedding, nhánh/commit, thời điểm. ChromaDB metadata chỉ nhận scalar nên
+        embedding, thời điểm. ChromaDB metadata chỉ nhận scalar nên
         list index_steps được nối thành chuỗi.
         """
         settings = get_settings()
@@ -177,10 +168,10 @@ class DocumentPipeline:
         for step in steps:
             try:
                 step_info.update(step.manifest_info())
-            except Exception:  # step lỗi khai báo manifest → bỏ qua, không chặn index
+            # Manifest chỉ là nhãn hiển thị → lỗi ở đây KHÔNG được chặn việc nạp văn bản.
+            except Exception:
                 logger.warning("Index step '%s' manifest_info() lỗi.", getattr(step, "name", "?"))
 
-        git = _git_info()
         return {
             "seedVersion": 1,
             "seedAt": datetime.now().isoformat(timespec="seconds"),
@@ -190,8 +181,6 @@ class DocumentPipeline:
             "seedEnrichModel": step_info.get("enrich_model", ""),
             "seedRetrieval": settings.retrieval_strategy,
             "seedEmbedding": settings.embedding_model,
-            "seedGitBranch": git.get("git_branch", ""),
-            "seedGitCommit": git.get("git_commit", ""),
         }
 
     def chunk_only(
@@ -201,21 +190,8 @@ class DocumentPipeline:
 
         Thứ tự chunk ở đây KHỚP với lúc process_document (cùng chunker) → seq nhất quán.
         """
-        ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
-        if ext not in ("pdf", "txt"):
-            raise DocumentPipelineError(f"Định dạng '{ext}' không hỗ trợ. Chỉ PDF hoặc TXT.")
-        raw_text = self._parse(file_content, ext)
-        if not raw_text.strip():
-            raise DocumentPipelineError("Không extract được text (có thể là PDF scan).")
-        base_meta = DocumentMetadata(
-            soHieu=metadata.soHieu, tenVanBan=metadata.tenVanBan,
-            ngayBanHanh=metadata.ngayBanHanh, ngayHieuLuc=metadata.ngayHieuLuc,
-            coQuanBanHanh=metadata.coQuanBanHanh, loaiVanBan=metadata.loaiVanBan,
-        )
-        chunks = self._chunker.chunk_document(raw_text, base_meta)
-        if not chunks:
-            raise DocumentPipelineError("Không tạo được chunk từ văn bản.")
-        return chunks
+        ext = self._validate_upload(file_content, filename)
+        return self._parse_and_chunk(file_content, ext, metadata)
 
     def _parse(self, content: bytes, ext: str) -> str:
         """Parse file → plain text."""

@@ -1,4 +1,4 @@
-"""Phase 1 — Vector-only retrieval (cosine similarity thuần qua ChromaDB)."""
+"""Vector retrieval — tìm kiếm theo cosine similarity thuần qua ChromaDB."""
 
 from __future__ import annotations
 

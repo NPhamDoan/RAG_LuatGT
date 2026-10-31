@@ -4,6 +4,7 @@ import logging
 
 from groq import AsyncGroq
 
+from app.providers._http_base import build_messages
 from app.providers.llm_provider import LLMProvider, LLMResponse
 
 logger = logging.getLogger(__name__)
@@ -29,10 +30,7 @@ class GroqProvider(LLMProvider):
         self._reasoning_effort = reasoning_effort or None
 
     async def generate(self, prompt: str, system_prompt: str = "") -> LLMResponse:
-        messages = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt})
+        messages = build_messages(prompt, system_prompt)
 
         logger.info("Groq request: model=%s, prompt_len=%d", self._model, len(prompt))
         logger.debug("Groq prompt đầy đủ:\n%s", prompt)

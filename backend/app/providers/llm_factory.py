@@ -52,10 +52,3 @@ def create_primary_llm(settings: Settings) -> LLMProvider:
     choice = settings.resolve_llm(settings.primary_llm_provider)
     logger.info("Khoi tao LLM synthesis: provider=%s, model=%s", choice.kind, choice.model)
     return _build(choice)
-
-
-def create_verify_llm(settings: Settings) -> LLMProvider:
-    """LLM xác minh (theo VERIFY_LLM_PROVIDER). Dùng cho Phase 4."""
-    choice = settings.resolve_llm(settings.verify_llm_provider)
-    logger.info("Khoi tao LLM verify: provider=%s, model=%s", choice.kind, choice.model)
-    return _build(choice)
