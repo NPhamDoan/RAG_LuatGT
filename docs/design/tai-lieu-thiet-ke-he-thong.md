@@ -995,9 +995,8 @@ Bảng mô tả các lớp trong sơ đồ:
 | Lớp | Thuộc tính chính | Phương thức | Mục đích |
 |---|---|---|---|
 | QueryContext | cau_hoi, query_vector, results, ket_qua, short_circuit | — | Chứa trạng thái đi xuyên suốt luồng hỏi–đáp |
-| StepDeps | settings, primary_llm, embedding, store, verify_llm | — | Gom các phụ thuộc cấp cho bước xử lý câu hỏi |
+| StepDeps | settings, primary_llm, embedding, store | — | Gom các phụ thuộc cấp cho bước xử lý câu hỏi |
 | QueryStep | name | before_retrieval, after_answer | Giao diện cho bước chạy trước truy hồi hoặc sau trả lời |
-| BaseStep | name="base" | before_retrieval, after_answer | Lớp cơ sở với hai phương thức mặc định không làm gì |
 | IndexContext | chunks, embed_texts | — | Giữ đoạn gốc và phần chữ dùng để sinh vector |
 | IndexDeps | settings, primary_llm, embedding | — | Gom các phụ thuộc cấp cho bước lập chỉ mục |
 | IndexStep | name | process(ctx) | Giao diện cho bước chạy giữa cắt đoạn và sinh vector |
@@ -1696,7 +1695,7 @@ backend/app/
 
 Kiểm thử được chia thành ba mức: kiểm thử đơn vị (unit test), kiểm thử tích hợp (integration test) và kiểm thử toàn hệ thống (system test). Các kiểm thử tự động dùng mô hình giả (fake/mock) và ChromaDB trong bộ nhớ để không cần tải mô hình 2GB hoặc gọi API thật.
 
-Trong thư mục `backend/tests/` hiện có **44 hàm kiểm thử tự động** trải trên 7 tệp. Tuy nhiên, bộ test chưa được chạy lại trên môi trường hiện tại vì thư mục môi trường ảo (`.venv`) chưa được tạo lại. Cần tạo `.venv` bằng Python 3.11, cài `requirements-dev.txt`, sau đó chạy `python -m pytest` trước khi điền kết quả PASS/FAIL chính thức.
+Trong thư mục `backend/tests/` hiện có **39 hàm kiểm thử tự động** trải trên 7 tệp. Bộ test đã được chạy lại trên môi trường Python 3.11 (`.venv` + `requirements-dev.txt`) bằng lệnh `python -m pytest`: **toàn bộ 39/39 hàm PASS**. Các kết quả PASS/FAIL dưới đây được điền theo lần chạy này.
 
 ## 13.2 Kiểm thử đơn vị (Unit Test)
 
@@ -1704,7 +1703,7 @@ Trong thư mục `backend/tests/` hiện có **44 hàm kiểm thử tự động
 |---|---:|---|
 | `test_chunker.py` | 4 | Cắt theo Điều, cắt theo kích thước khi không có Điều, cắt Điều dài, xử lý văn bản rỗng |
 | `test_vector_store.py` | 2 | Thêm/tìm/xóa đoạn bằng vector, tìm trên kho rỗng |
-| `test_enrich_io.py` | 8 | Xuất/nhập dữ liệu làm giàu theo JSONL, bắt lỗi nhiều văn bản, vòng xuất–nhập khớp seq |
+| `test_enrich_io.py` | 5 | Xuất dữ liệu làm giàu theo văn bản, parse import lọc theo số hiệu (bỏ qua văn bản khác, bắt lỗi sai định dạng) |
 
 ## 13.3 Kiểm thử tích hợp (Integration Test)
 
@@ -1712,8 +1711,8 @@ Trong thư mục `backend/tests/` hiện có **44 hàm kiểm thử tự động
 |---|---:|---|
 | `test_query_pipeline.py` | 6 | Không có kết quả, hai mức lọc ngưỡng, tổng hợp với độ tin cậy trung bình/cao, cơ chế dự phòng khi mô hình lỗi |
 | `test_document_pipeline.py` | 3 | Giữ hành vi khi không có bước mở rộng, làm giàu dữ liệu nhúng nhưng giữ đoạn gốc, bỏ qua module mở rộng bị thiếu |
-| `test_hybrid_search.py` | 11 | Bỏ dấu + tách token, BM25 khớp chính xác, hybrid cứu exact-match, điểm trả về vẫn là cosine, cache BM25 theo `data_version` |
-| `test_enrich_step.py` | 10 | Làm giàu chỉ sửa text để embed, lỗi LLM giữ đoạn gốc, chọn LLM riêng từ `.env`, làm giàu từ nguồn file |
+| `test_hybrid_search.py` | 10 | Bỏ dấu + tách token, BM25 khớp chính xác, hybrid cứu exact-match, điểm trả về vẫn là cosine, cache BM25 theo `data_version` |
+| `test_enrich_step.py` | 9 | Làm giàu chỉ sửa text để embed, lỗi LLM giữ đoạn gốc, chọn LLM riêng từ `.env`, làm giàu từ nguồn file |
 
 ## 13.4 Kiểm thử toàn hệ thống (System Test)
 
@@ -1732,8 +1731,8 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 | Điều kiện trước | Kho có điều khoản liên quan; mô hình giả trả nội dung có [1] |
 | Dữ liệu kiểm thử | Câu hỏi về một hành vi vi phạm giao thông |
 | Kết quả mong đợi | Nội dung trả lời không rỗng; danh sách trích dẫn có số hiệu và Điều |
-| Kết quả thực tế | Chưa chạy lại trên môi trường hiện tại |
-| Trạng thái | CHƯA XÁC NHẬN |
+| Kết quả thực tế | `test_synthesis_medium_confidence`, `test_synthesis_high_confidence` PASS |
+| Trạng thái | ĐẠT |
 
 ### TC-002 – Gán nhãn độ tin cậy
 
@@ -1746,8 +1745,8 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 | Điều kiện trước | Có kết quả tìm kiếm với điểm xác định |
 | Dữ liệu kiểm thử | Điểm 0.60 và 0.90 |
 | Kết quả mong đợi | Điểm 0.60 → trung bình; điểm 0.90 → cao |
-| Kết quả thực tế | Chưa chạy lại trên môi trường hiện tại |
-| Trạng thái | CHƯA XÁC NHẬN |
+| Kết quả thực tế | `test_synthesis_medium_confidence` (0.6→trung bình), `test_synthesis_high_confidence` (0.9→cao) PASS |
+| Trạng thái | ĐẠT |
 
 ### TC-003 – Lọc dưới ngưỡng không gọi mô hình
 
@@ -1760,8 +1759,8 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 | Điều kiện trước | Mô hình giả có bộ đếm số lần gọi |
 | Dữ liệu kiểm thử | Không có kết quả; điểm < 0.3; điểm từ 0.3 đến dưới 0.5 |
 | Kết quả mong đợi | Báo không tìm thấy/không đủ liên quan; số lần gọi mô hình bằng 0 |
-| Kết quả thực tế | Chưa chạy lại trên môi trường hiện tại |
-| Trạng thái | CHƯA XÁC NHẬN |
+| Kết quả thực tế | `test_no_results`, `test_below_min_threshold`, `test_below_confident_threshold` PASS |
+| Trạng thái | ĐẠT |
 
 ### TC-004 – Nạp văn bản hợp lệ
 
@@ -1773,9 +1772,9 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 | Loại | Tích hợp / hệ thống |
 | Điều kiện trước | Admin đã đăng nhập; số hiệu chưa tồn tại |
 | Dữ liệu kiểm thử | Tệp TXT/PDF hợp lệ kèm đầy đủ thông tin mô tả |
-| Kết quả mong đợi | Trả 201; số đoạn > 0; văn bản xuất hiện trong danh sách |
-| Kết quả thực tế | Chưa có test tự động đầy đủ; cần chạy bổ sung |
-| Trạng thái | CHƯA XÁC NHẬN |
+| Kết quả mong đợi | Số đoạn > 0; chunk gốc được lưu; cắt đúng theo Điều |
+| Kết quả thực tế | `test_no_index_step_preserves_phase1_behavior`, `test_chunk_by_dieu` PASS (tầng pipeline/chunk); chưa có test API HTTP |
+| Trạng thái | ĐẠT MỘT PHẦN (thiếu test API HTTP) |
 
 ### TC-005 – Từ chối trùng số hiệu và PDF ảnh quét
 
@@ -1788,8 +1787,8 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 | Điều kiện trước | Kho đã có một văn bản |
 | Dữ liệu kiểm thử | Nạp lại cùng số hiệu; nạp PDF không trích được chữ |
 | Kết quả mong đợi | Trùng số hiệu → 409; PDF ảnh quét → 400 |
-| Kết quả thực tế | Chưa có test tự động; cần chạy bổ sung |
-| Trạng thái | CHƯA XÁC NHẬN |
+| Kết quả thực tế | Chưa có test tự động (dự kiến kiểm thử thủ công qua API) |
+| Trạng thái | CHƯA CÓ TEST TỰ ĐỘNG |
 
 ### TC-006 – Liệt kê văn bản theo trang
 
@@ -1802,8 +1801,8 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 | Điều kiện trước | Kho có nhiều văn bản |
 | Dữ liệu kiểm thử | `page=1`, `page_size=20` |
 | Kết quả mong đợi | Danh sách đúng trang; mỗi văn bản có số hiệu, tên, loại, số đoạn |
-| Kết quả thực tế | Chưa có test tự động riêng; cần bổ sung |
-| Trạng thái | CHƯA XÁC NHẬN |
+| Kết quả thực tế | Chưa có test tự động (dự kiến kiểm thử thủ công qua API) |
+| Trạng thái | CHƯA CÓ TEST TỰ ĐỘNG |
 
 ### TC-007 – Sửa thông tin văn bản
 
@@ -1816,8 +1815,8 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 | Điều kiện trước | Admin đã đăng nhập; văn bản tồn tại |
 | Dữ liệu kiểm thử | Đổi tên/loại văn bản, sau đó đổi số hiệu |
 | Kết quả mong đợi | Metadata mọi đoạn được cập nhật; vector và nội dung đoạn giữ nguyên |
-| Kết quả thực tế | Chưa có test tự động; cần bổ sung |
-| Trạng thái | CHƯA XÁC NHẬN |
+| Kết quả thực tế | Chưa có test tự động (dự kiến kiểm thử thủ công qua API) |
+| Trạng thái | CHƯA CÓ TEST TỰ ĐỘNG |
 
 ### TC-008 – Xóa văn bản
 
@@ -1829,9 +1828,9 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 | Loại | Đơn vị / hệ thống |
 | Điều kiện trước | Admin đã đăng nhập; văn bản tồn tại |
 | Dữ liệu kiểm thử | Số hiệu văn bản cần xóa |
-| Kết quả mong đợi | Mọi đoạn của văn bản bị xóa; lần xóa tiếp theo trả 404 |
-| Kết quả thực tế | Phần xóa ở kho có test; API chưa chạy lại |
-| Trạng thái | CHƯA XÁC NHẬN |
+| Kết quả mong đợi | Mọi đoạn của văn bản bị xóa khỏi kho |
+| Kết quả thực tế | `test_add_search_delete_vector_only` PASS (tầng kho); chưa có test API HTTP |
+| Trạng thái | ĐẠT MỘT PHẦN (thiếu test API HTTP) |
 
 ### TC-009 – Chặn thao tác ghi khi chưa đăng nhập
 
@@ -1844,8 +1843,8 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 | Điều kiện trước | Đã cấu hình mật khẩu admin |
 | Dữ liệu kiểm thử | Gọi POST/PATCH/DELETE `/api/documents` không có phiếu truy cập |
 | Kết quả mong đợi | Trả 401; đăng nhập đúng thì thao tác được phép tiếp tục |
-| Kết quả thực tế | Chưa có test tự động; cần chạy lại kiểm thử API |
-| Trạng thái | CHƯA XÁC NHẬN |
+| Kết quả thực tế | Chưa có test tự động (dự kiến kiểm thử thủ công qua API) |
+| Trạng thái | CHƯA CÓ TEST TỰ ĐỘNG |
 
 ### TC-010 – Dự phòng khi mô hình ngôn ngữ lỗi
 
@@ -1858,15 +1857,15 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 | Điều kiện trước | Mô hình giả phát sinh ngoại lệ; có đoạn liên quan |
 | Dữ liệu kiểm thử | Câu hỏi hợp lệ |
 | Kết quả mong đợi | Trả thông báo mô hình không khả dụng, `chunksGoc`, trích dẫn và độ tin cậy |
-| Kết quả thực tế | Chưa chạy lại trên môi trường hiện tại |
-| Trạng thái | CHƯA XÁC NHẬN |
+| Kết quả thực tế | `test_fallback_when_llm_fails` PASS |
+| Trạng thái | ĐẠT |
 
 ## 13.6 Tổng kết kiểm thử
 
 | Loại kiểm thử | Số hàm/kịch bản đã có | Kết quả hiện tại | Việc còn lại |
 |---|---:|---|---|
-| Kiểm thử đơn vị | 14 hàm (chunker, vector_store, enrich_io) | Chưa chạy lại | Tạo `.venv` và chạy pytest |
-| Kiểm thử tích hợp | 30 hàm (query/document pipeline, hybrid, enrich) | Chưa chạy lại | Chạy pytest; bổ sung test API quản lý văn bản/auth |
+| Kiểm thử đơn vị | 11 hàm (chunker, vector_store, enrich_io) | 11/11 PASS | — |
+| Kiểm thử tích hợp | 28 hàm (query/document pipeline, hybrid, enrich) | 28/28 PASS | Bổ sung test API quản lý văn bản/auth (TC-005→009) |
 | Kiểm thử toàn hệ thống | 1 kịch bản dự kiến | Chưa chạy | Khởi động ứng dụng và thực hiện end-to-end |
 
 ---
@@ -1956,16 +1955,16 @@ Bảng mô tả các nút triển khai:
 
 | Requirement | Test Case | Tình trạng |
 |---|---|---|
-| FR-01, FR-02 | TC-001 | Có test pipeline; cần chạy lại |
-| FR-03 | TC-002 | Có test pipeline; cần chạy lại |
-| FR-04 | TC-003 | Có test pipeline; cần chạy lại |
-| FR-05 | TC-004 | Cần bổ sung test API/pipeline đầy đủ |
-| FR-06 | TC-005 | Cần bổ sung test trùng số hiệu/PDF ảnh quét |
-| FR-07 | TC-006 | Cần bổ sung test phân trang |
-| FR-08 | TC-007 | Cần bổ sung test cập nhật metadata |
-| FR-09 | TC-008 | Có test tầng kho; cần test API |
-| FR-10 | TC-009 | Cần bổ sung test xác thực API |
-| FR-11 | TC-010 | Có test pipeline; cần chạy lại |
+| FR-01, FR-02 | TC-001 | ĐẠT (test pipeline PASS) |
+| FR-03 | TC-002 | ĐẠT (test pipeline PASS) |
+| FR-04 | TC-003 | ĐẠT (test gating PASS) |
+| FR-05 | TC-004 | ĐẠT một phần (test pipeline/chunk PASS; thiếu test API) |
+| FR-06 | TC-005 | Chưa có test tự động (kiểm thử thủ công) |
+| FR-07 | TC-006 | Chưa có test tự động (kiểm thử thủ công) |
+| FR-08 | TC-007 | Chưa có test tự động (kiểm thử thủ công) |
+| FR-09 | TC-008 | ĐẠT một phần (test tầng kho PASS; thiếu test API) |
+| FR-10 | TC-009 | Chưa có test tự động (kiểm thử thủ công) |
+| FR-11 | TC-010 | ĐẠT (test fallback PASS) |
 
 ---
 
@@ -2041,7 +2040,7 @@ Làm giàu đoạn lúc lập chỉ mục (`EnrichStep`) và tìm kiếm lai vec
 
 | Mục tiêu | Kết quả |
 |---|---|
-| Pipeline RAG hoàn chỉnh có trích dẫn | Đạt ở mức hiện thực; cần chạy lại bộ test trên môi trường mới |
+| Pipeline RAG hoàn chỉnh có trích dẫn | Đạt; 39/39 test tự động PASS (pipeline, gating, hybrid, enrich) |
 | Chống bịa đặt bằng lọc ngưỡng và cơ chế dự phòng | Đạt ở mức thiết kế/hiện thực; cần đánh giá trên dữ liệu thật |
 | Giao diện chat + khu quản trị có xác thực | Đạt; cần cấu hình bắt buộc mật khẩu khi triển khai |
 | Kiến trúc module dễ mở rộng | Đạt |
@@ -2084,7 +2083,7 @@ Lược đồ bản ghi đoạn và từ điển dữ liệu tại chương 8.3�
 
 # PHỤ LỤC E – TEST CASE ĐẦY ĐỦ
 
-Mười test case (TC-001 đến TC-010) tại chương 13.5 phủ FR-01 đến FR-11. Bộ kiểm thử hiện có 44 hàm trên 7 tệp trong `backend/tests/`; các ca còn thiếu được ghi rõ trạng thái để bổ sung sau khi tạo lại môi trường ảo.
+Mười test case (TC-001 đến TC-010) tại chương 13.5 phủ FR-01 đến FR-11. Bộ kiểm thử tự động hiện có 39 hàm trên 7 tệp trong `backend/tests/`, đã chạy PASS toàn bộ 39/39. Các ca chưa có test tự động (TC-005→007, TC-009 — thao tác API quản lý văn bản/xác thực) được ghi rõ trạng thái để kiểm thử thủ công hoặc bổ sung test API sau.
 
 # PHỤ LỤC F – GIAO DIỆN HỆ THỐNG
 
