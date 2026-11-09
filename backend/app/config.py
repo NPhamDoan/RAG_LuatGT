@@ -14,7 +14,7 @@ _ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
 class LLMChoice:
     """Cấu hình đã phân giải cho MỘT provider (dùng bởi llm_factory)."""
 
-    kind: str            # groq | mistral | cohere | gemini | ollama
+    kind: str            # groq | mistral | cohere | gemini | ollama | fosta
     model: str
     api_key: str = ""
     base_url: str = ""
@@ -22,6 +22,7 @@ class LLMChoice:
     max_tokens: int = 2048
     reasoning_effort: str | None = None
     think: bool | None = None
+    wire_api: str = "auto"
 
 
 class Settings(BaseSettings):
@@ -45,6 +46,12 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     gemini_model: str = "gemini-3.6-flash"
 
+    fosta_api_key: str = ""
+    fosta_base_url: str = "https://codex.fosta.app/v1"
+    fosta_model: str = "cx/gpt-6.1-sol"
+    fosta_wire_api: str = "responses"     # responses | chat | auto
+    fosta_reasoning_effort: str = "low"   # low | medium | high | ""
+
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen3:8b"
     ollama_timeout: int = 180   # Ollama chạy CPU thường chậm → timeout riêng, cao hơn cloud
@@ -55,8 +62,8 @@ class Settings(BaseSettings):
     llm_timeout: int = 30       # timeout cho provider cloud (Ollama dùng ollama_timeout)
 
     # ===== Chọn provider cho từng vai trò (chỉ điền tên) =====
-    primary_llm_provider: str = "groq"    # groq | mistral | cohere | gemini | ollama
-    verify_llm_provider: str = "gemini"   # gemini | groq | mistral | cohere | ollama
+    primary_llm_provider: str = "groq"    # groq | mistral | cohere | gemini | ollama | fosta
+    verify_llm_provider: str = "gemini"   # gemini | groq | mistral | cohere | ollama | fosta
 
     # ===== Auth admin (chỉ mật khẩu) =====
     # Hash PBKDF2 của mật khẩu admin. TRỐNG = TẮT auth (route ghi mở công khai — chỉ dùng khi dev).
@@ -148,9 +155,17 @@ class Settings(BaseSettings):
                 timeout=self.ollama_timeout, max_tokens=self.llm_max_tokens,
                 think=self.ollama_think,
             )
+        if p == "fosta":
+            return LLMChoice(
+                kind="fosta", model=self.fosta_model, api_key=self.fosta_api_key,
+                base_url=self.fosta_base_url, timeout=self.llm_timeout,
+                max_tokens=self.llm_max_tokens,
+                reasoning_effort=self.fosta_reasoning_effort or None,
+                wire_api=self.fosta_wire_api or "auto",
+            )
         raise ValueError(
             f"Provider LLM '{provider}' không hỗ trợ. "
-            "Dùng: groq | mistral | cohere | gemini | ollama."
+            "Dùng: groq | mistral | cohere | gemini | ollama | fosta."
         )
 
     @property

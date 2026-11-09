@@ -308,9 +308,20 @@ def build_auto(deps: IndexDeps) -> EnrichStep:
             model=resolved_model, base_url=base_url, timeout=timeout,
             think=cfg.enrich_ollama_think,
         )
+    elif provider == "fosta":
+        from app.providers.fosta_provider import FostaProvider
+
+        fosta_choice = deps.settings.resolve_llm("fosta")
+        api_key = cfg.enrich_llm_api_key.strip() or fosta_choice.api_key
+        resolved_model = model or fosta_choice.model
+        llm = FostaProvider(
+            api_key=api_key, model=resolved_model, base_url=fosta_choice.base_url,
+            timeout=timeout, max_tokens=fosta_choice.max_tokens,
+            wire_api=fosta_choice.wire_api, reasoning_effort=fosta_choice.reasoning_effort,
+        )
     else:
         logger.warning(
-            "ENRICH_LLM_PROVIDER='%s' không hỗ trợ (groq|ollama) → dùng LLM chính.", provider
+            "ENRICH_LLM_PROVIDER='%s' không hỗ trợ (groq|ollama|fosta) → dùng LLM chính.", provider
         )
         primary_model = getattr(deps.settings, "primary_llm_provider", "") or "primary"
         return EnrichStep(deps.primary_llm, cfg.enrich_concurrency, model=primary_model)

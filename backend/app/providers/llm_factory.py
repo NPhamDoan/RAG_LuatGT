@@ -9,6 +9,7 @@ import logging
 
 from app.config import LLMChoice, Settings
 from app.providers.cohere_provider import CohereProvider
+from app.providers.fosta_provider import FostaProvider
 from app.providers.gemini_provider import GeminiProvider
 from app.providers.groq_provider import GroqProvider
 from app.providers.llm_provider import LLMProvider
@@ -43,6 +44,12 @@ def _build(choice: LLMChoice) -> LLMProvider:
         return OllamaProvider(
             model=choice.model, base_url=choice.base_url, timeout=choice.timeout,
             think=choice.think,
+        )
+    if choice.kind == "fosta":
+        return FostaProvider(
+            api_key=choice.api_key, model=choice.model, base_url=choice.base_url,
+            timeout=choice.timeout, max_tokens=choice.max_tokens,
+            wire_api=choice.wire_api, reasoning_effort=choice.reasoning_effort,
         )
     raise ValueError(f"LLMChoice.kind='{choice.kind}' không hỗ trợ.")
 
