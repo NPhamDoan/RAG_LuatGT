@@ -1,1 +1,67 @@
-<mxfile host="app.diagrams.net"><diagram name="ssd-napvanban" id="ssd-upload"><mxGraphModel dx="850" dy="650" grid="0" page="0" defaultFontFamily="Segoe UI"><root><mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="a" value="Quản trị viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;fillColor=#ffe6cc;strokeColor=#d79b00;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="80" y="30" width="150" height="500" as="geometry"/></mxCell><mxCell id="s" value="Hệ thống RAG" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="540" y="30" width="160" height="500" as="geometry"/></mxCell><mxCell id="alt" value="alt [hợp lệ / chưa xác thực / file lỗi hoặc trùng]" style="shape=umlFrame;whiteSpace=wrap;html=1;width=290;height=26;fillColor=none;strokeColor=#999999;fontStyle=2;verticalAlign=top;align=left;fontFamily=Segoe UI;" vertex="1" parent="1"><mxGeometry x="60" y="230" width="660" height="250" as="geometry"/></mxCell><mxCell id="d1" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="60" y="335" as="sourcePoint"/><mxPoint x="720" y="335" as="targetPoint"/></mxGeometry></mxCell><mxCell id="d2" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="60" y="400" as="sourcePoint"/><mxPoint x="720" y="400" as="targetPoint"/></mxGeometry></mxCell><mxCell id="m1" value="1. dangNhap(matKhau)" style="html=1;endArrow=block;endFill=1;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="155" y="110" as="sourcePoint"/><mxPoint x="620" y="110" as="targetPoint"/></mxGeometry></mxCell><mxCell id="m2" value="2. nhanPhieuTruyCap(token)" style="html=1;endArrow=open;dashed=1;endFill=0;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="620" y="155" as="sourcePoint"/><mxPoint x="155" y="155" as="targetPoint"/></mxGeometry></mxCell><mxCell id="m3" value="3. napVanBan(file, metadata, token)" style="html=1;endArrow=block;endFill=1;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="155" y="205" as="sourcePoint"/><mxPoint x="620" y="205" as="targetPoint"/></mxGeometry></mxCell><mxCell id="m4" value="4. hienThiKetQua(soHieu, soChunks, ngayIndex)" style="html=1;endArrow=open;dashed=1;endFill=0;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="620" y="295" as="sourcePoint"/><mxPoint x="155" y="295" as="targetPoint"/></mxGeometry></mxCell><mxCell id="m5" value="4a. thongBaoChuaDangNhap(401)" style="html=1;endArrow=open;dashed=1;endFill=0;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="620" y="370" as="sourcePoint"/><mxPoint x="155" y="370" as="targetPoint"/></mxGeometry></mxCell><mxCell id="m6" value="4b. thongBaoLoi(400/409)" style="html=1;endArrow=open;dashed=1;endFill=0;fontFamily=Segoe UI;verticalAlign=bottom;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="620" y="445" as="sourcePoint"/><mxPoint x="155" y="445" as="targetPoint"/></mxGeometry></mxCell></root></mxGraphModel></diagram></mxfile>
+<mxfile host="Electron">
+  <diagram name="ssd-napvanban" id="ssd-upload">
+    <mxGraphModel dx="706" dy="618" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="a" parent="1" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;fillColor=#ffe6cc;strokeColor=#d79b00;fontFamily=Segoe UI;size=48;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;Quản trị viên" vertex="1">
+          <mxGeometry height="500" width="40" x="135" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="s" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Segoe UI;" value="Hệ thống RAG" vertex="1">
+          <mxGeometry height="500" width="160" x="540" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="alt" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;width=290;height=26;fillColor=none;strokeColor=#999999;fontStyle=2;verticalAlign=top;align=left;fontFamily=Segoe UI;" value="alt [hợp lệ / chưa xác thực / file lỗi hoặc trùng]" vertex="1">
+          <mxGeometry height="250" width="660" x="60" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="60" y="335" as="sourcePoint" />
+            <mxPoint x="720" y="335" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d2" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="60" y="400" as="sourcePoint" />
+            <mxPoint x="720" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m1" edge="1" parent="1" style="html=1;endArrow=block;endFill=1;fontFamily=Segoe UI;verticalAlign=bottom;" value="1. dangNhap(matKhau)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="155" y="110" as="sourcePoint" />
+            <mxPoint x="620" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" edge="1" parent="1" style="html=1;endArrow=open;dashed=1;endFill=0;fontFamily=Segoe UI;verticalAlign=bottom;" value="2. nhanPhieuTruyCap(token)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="155" as="sourcePoint" />
+            <mxPoint x="155" y="155" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" edge="1" parent="1" style="html=1;endArrow=block;endFill=1;fontFamily=Segoe UI;verticalAlign=bottom;" value="3. napVanBan(file, metadata, token)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="155" y="205" as="sourcePoint" />
+            <mxPoint x="620" y="205" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" edge="1" parent="1" style="html=1;endArrow=open;dashed=1;endFill=0;fontFamily=Segoe UI;verticalAlign=bottom;" value="4. hienThiKetQua(soHieu, soChunks, ngayIndex)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="295" as="sourcePoint" />
+            <mxPoint x="155" y="295" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m5" edge="1" parent="1" style="html=1;endArrow=open;dashed=1;endFill=0;fontFamily=Segoe UI;verticalAlign=bottom;" value="4a. thongBaoChuaDangNhap(401)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="370" as="sourcePoint" />
+            <mxPoint x="155" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" edge="1" parent="1" style="html=1;endArrow=open;dashed=1;endFill=0;fontFamily=Segoe UI;verticalAlign=bottom;" value="4b. thongBaoLoi(400/409)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="445" as="sourcePoint" />
+            <mxPoint x="155" y="445" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -150,11 +150,14 @@ def read_report_title(md_path):
 
 
 class MdToDocx:
-    def __init__(self, md_path: Path):
+    def __init__(self, md_path: Path, skip_cover: bool = False):
         self.md_path = md_path
         self.base = md_path.parent
         self.doc = Document()
-        self.cover_mode = True
+        # skip_cover=True: bo qua phan bia tu sinh (dung khi ghep bia tu Bia.docx)
+        self.skip_cover = skip_cover
+        self.cover_mode = not skip_cover
+        self.skipping_until_toc = skip_cover
         self.cover_heading_count = 0
         self.current_heading = ""
         self.chapter = None
@@ -236,6 +239,13 @@ class MdToDocx:
         set_run_font(page_run, size=10)
 
     def add_heading(self, text, markdown_level):
+        # Che do bo bia: bo qua moi thu cho den khi gap "MỤC LỤC"
+        if self.skipping_until_toc:
+            if text == "MỤC LỤC":
+                self.skipping_until_toc = False
+            else:
+                return
+
         if self.cover_mode and text == "MỤC LỤC":
             self.cover_mode = False
 
@@ -412,17 +422,26 @@ class MdToDocx:
         set_run_font(run, size=11)
 
 
-def convert(md_path: Path, out_path: Path):
+def convert(md_path: Path, out_path: Path, skip_cover: bool = False):
     if not md_path.exists():
         raise FileNotFoundError(f"Không tìm thấy file Markdown: {md_path}")
 
-    converter = MdToDocx(md_path)
+    converter = MdToDocx(md_path, skip_cover=skip_cover)
     lines = md_path.read_text(encoding="utf-8").splitlines()
     index = 0
 
     while index < len(lines):
         line = lines[index]
         stripped = line.strip()
+
+        # Che do bo bia: chi xu ly heading cho den khi gap "MỤC LỤC",
+        # bo qua moi noi dung bia khac (doan van, bang thanh vien...).
+        if converter.skipping_until_toc:
+            match = _HEADING_RE.match(line)
+            if match:
+                converter.add_heading(match.group(2).strip(), len(match.group(1)))
+            index += 1
+            continue
 
         if stripped.startswith("```"):
             block = []
@@ -496,10 +515,12 @@ def convert(md_path: Path, out_path: Path):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)-7s | %(name)s | %(message)s")
-    if len(sys.argv) >= 3:
-        source = Path(sys.argv[1])
-        destination = Path(sys.argv[2])
+    args = [a for a in sys.argv[1:] if a != "--skip-cover"]
+    skip_cover = "--skip-cover" in sys.argv
+    if len(args) >= 2:
+        source = Path(args[0])
+        destination = Path(args[1])
     else:
         source = Path(__file__).parent / "tai-lieu-thiet-ke-he-thong.md"
         destination = Path(__file__).parent / "tai-lieu-thiet-ke-he-thong.docx"
-    convert(source, destination)
+    convert(source, destination, skip_cover=skip_cover)

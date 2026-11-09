@@ -12,6 +12,7 @@ $cmd = Get-Command drawio -ErrorAction SilentlyContinue
 if ($cmd) { $drawio = $cmd.Source }
 if (-not $drawio) {
   $candidates = @(
+    "G:\Program Files\draw.io\draw.io.exe",
     "C:\Program Files\draw.io\draw.io.exe",
     "$env:LOCALAPPDATA\Programs\draw.io\draw.io.exe"
   )
@@ -34,7 +35,9 @@ Get-ChildItem -Path $here -Filter *.drawio | ForEach-Object {
   $in = $_.FullName
   $out = Join-Path $outDir ($_.BaseName + ".png")
   Write-Host "Render $($_.Name) -> png/$($_.BaseName).png"
-  & $drawio --export --format png --scale 2 --crop --border 20 --output $out $in
+  
+  # Thêm cờ tắt GPU và dọn luồng stderr để chặn log lỗi Chromium
+  & $drawio --export --format png --scale 2 --crop --border 20 --disable-gpu --disable-software-rasterizer --no-sandbox --output $out $in 2>$null
 }
 
 Write-Host "Xong. PNG o: $outDir"
