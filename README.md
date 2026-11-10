@@ -27,7 +27,7 @@ Bản này gồm: **Phase 1** (core RAG + chat UI) + **Phase 2** (hybrid search 
 | Backend | Python 3.11+ / FastAPI (async) |
 | Vector DB | ChromaDB (embedded, cosine) |
 | Embedding | sentence-transformers `intfloat/multilingual-e5-large` (1024 chiều, chạy CPU) |
-| LLM synthesis | Cấu hình qua `.env` (Groq / Mistral / Cohere / Ollama / Gemini) |
+| LLM synthesis | Cấu hình qua `.env` (Groq / Mistral / Cohere / Fosta / Ollama / Gemini) |
 | Parse PDF | PyMuPDF |
 
 ---
@@ -100,6 +100,30 @@ Công cụ hỗ trợ ở gốc dự án: `export_chunks_for_enrich.py` (xuất 
 ---
 
 ## Kiểm thử
+
+### 1. Kiểm tra kết nối LLM theo cấu hình `backend/.env` (`test_llm.py`)
+
+Chạy từ thư mục gốc dự án để kiểm tra nhanh API key, model và tốc độ phản hồi thực tế của từng LLM provider:
+
+```powershell
+# Test provider chính đang chọn (PRIMARY_LLM_PROVIDER trong backend/.env)
+.\backend\.venv\Scripts\python.exe backend/test_llm.py
+
+# Test chỉ định một provider cụ thể (groq | mistral | cohere | gemini | fosta | ollama)
+.\backend\.venv\Scripts\python.exe backend/test_llm.py -p fosta
+.\backend\.venv\Scripts\python.exe backend/test_llm.py -p groq
+
+# Test provider của bước xác minh (VERIFY_LLM_PROVIDER)
+.\backend\.venv\Scripts\python.exe backend/test_llm.py -r verify
+
+# Test toàn bộ các provider đã khai báo key trong backend/.env cùng lúc
+.\backend\.venv\Scripts\python.exe backend/test_llm.py --all
+
+# Đổi câu hỏi thử nghiệm tùy ý
+.\backend\.venv\Scripts\python.exe backend/test_llm.py -p fosta --prompt "Uống rượu bia lái xe máy phạt bao nhiêu?"
+```
+
+### 2. Chạy Unit Test tự động (`pytest`)
 
 ```powershell
 cd backend

@@ -8,44 +8,50 @@ Thêm provider mới: thêm nhánh trong _build + nhánh tương ứng trong Set
 import logging
 
 from app.config import LLMChoice, Settings
-from app.providers.cohere_provider import CohereProvider
-from app.providers.fosta_provider import FostaProvider
-from app.providers.gemini_provider import GeminiProvider
-from app.providers.groq_provider import GroqProvider
 from app.providers.llm_provider import LLMProvider
-from app.providers.mistral_provider import MistralProvider
-from app.providers.ollama_provider import OllamaProvider
 
 logger = logging.getLogger(__name__)
 
 
 def _build(choice: LLMChoice) -> LLMProvider:
-    """Dựng LLMProvider cụ thể từ LLMChoice đã phân giải."""
+    """Dựng LLMProvider cụ thể từ LLMChoice đã phân giải (lazy-import để khởi động nhanh)."""
     if choice.kind == "groq":
+        from app.providers.groq_provider import GroqProvider
+
         return GroqProvider(
             api_key=choice.api_key, model=choice.model, timeout=choice.timeout,
             max_tokens=choice.max_tokens, reasoning_effort=choice.reasoning_effort,
         )
     if choice.kind == "mistral":
+        from app.providers.mistral_provider import MistralProvider
+
         return MistralProvider(
             api_key=choice.api_key, model=choice.model,
             timeout=choice.timeout, max_tokens=choice.max_tokens,
         )
     if choice.kind == "cohere":
+        from app.providers.cohere_provider import CohereProvider
+
         return CohereProvider(
             api_key=choice.api_key, model=choice.model,
             timeout=choice.timeout, max_tokens=choice.max_tokens,
         )
     if choice.kind == "gemini":
+        from app.providers.gemini_provider import GeminiProvider
+
         return GeminiProvider(
             api_key=choice.api_key, model=choice.model, timeout=choice.timeout,
         )
     if choice.kind == "ollama":
+        from app.providers.ollama_provider import OllamaProvider
+
         return OllamaProvider(
             model=choice.model, base_url=choice.base_url, timeout=choice.timeout,
             think=choice.think,
         )
     if choice.kind == "fosta":
+        from app.providers.fosta_provider import FostaProvider
+
         return FostaProvider(
             api_key=choice.api_key, model=choice.model, base_url=choice.base_url,
             timeout=choice.timeout, max_tokens=choice.max_tokens,
