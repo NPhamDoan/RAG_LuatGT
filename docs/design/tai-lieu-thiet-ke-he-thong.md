@@ -136,7 +136,7 @@ Bảng mô tả các thành phần trong sơ đồ ngữ cảnh:
 | Hệ thống RAG Luật Giao thông | Xử lý câu hỏi, điều phối tìm kiếm và tổng hợp |
 | Kho vector ChromaDB | Lưu đoạn văn bản và vector, tìm theo độ tương đồng |
 | Embedding e5-large (cục bộ) | Sinh vector 1024 chiều cho câu hỏi và đoạn văn |
-| LLM (Groq/Mistral/Cohere/Gemini/Ollama) | Tổng hợp câu trả lời có trích dẫn |
+| LLM (Groq/Mistral/Cohere/Gemini/Fosta/Ollama) | Tổng hợp câu trả lời có trích dẫn |
 
 ## 2.3 Các chức năng chính
 
@@ -158,7 +158,7 @@ Bảng mô tả các thành phần trong sơ đồ ngữ cảnh:
 | Backend | Python 3.11+ / FastAPI (bất đồng bộ) |
 | Cơ sở dữ liệu | ChromaDB (vector database, lưu đĩa, nhúng) |
 | Sinh vector nhúng | sentence-transformers `intfloat/multilingual-e5-large` (1024 chiều) |
-| Mô hình ngôn ngữ | Groq / Mistral / Cohere / Gemini / Ollama (đổi qua cấu hình) |
+| Mô hình ngôn ngữ | Groq / Mistral / Cohere / Gemini / Fosta / Ollama (đổi qua cấu hình) |
 | Đọc PDF | PyMuPDF |
 | Xác thực | Mật khẩu băm PBKDF2 + token ký HMAC (stateless) |
 | Triển khai | Chạy cục bộ (backend cổng 8000, frontend cổng 5173) |
@@ -974,10 +974,12 @@ Bảng mô tả các lớp trong sơ đồ:
 | LLMProvider | ABC (giao diện trừu tượng) | generate(prompt, system_prompt) | Quy định giao diện chung cho mô hình ngôn ngữ |
 | EmbeddingProvider | ABC | embed_text, embed_batch, get_dimension | Quy định giao diện chung để sinh vector |
 | GroqProvider | LLMProvider | model, timeout, max_tokens, reasoning_effort | Gọi Groq; nhiệt độ (temperature) 0.2 |
-| MistralProvider | LLMProvider | model, timeout, max_tokens | Gọi Mistral Chat API; nhiệt độ 0.2 |
-| CohereProvider | LLMProvider | model, timeout, max_tokens | Gọi Cohere Chat API v2; ghép các khối nội dung trả về |
+| HttpLLMProvider | LLMProvider (lớp cơ sở) | PROVIDER, URL, _build_payload, _extract | Khung chung cho provider gọi Chat API qua HTTP (Bearer + JSON): dựng messages, POST, xử lý lỗi HTTP, cảnh báo nội dung rỗng |
+| MistralProvider | HttpLLMProvider | model, timeout, max_tokens | Gọi Mistral Chat API; nhiệt độ 0.2 |
+| CohereProvider | HttpLLMProvider | model, timeout, max_tokens | Gọi Cohere Chat API v2; ghép các khối nội dung trả về |
 | GeminiProvider | LLMProvider | model, timeout | Gọi Gemini; nhiệt độ 0.1 |
 | OllamaProvider | LLMProvider | model, base_url, timeout, think | Gọi mô hình cục bộ qua Ollama; có thể tắt suy luận để chạy nhanh hơn |
+| FostaProvider | LLMProvider | model, base_url, timeout, max_tokens, wire_api, reasoning_effort | Gọi endpoint OpenAI-compatible (Fosta) qua HTTP; hỗ trợ Responses/Chat API, parse SSE, tự dò model dự phòng khi model cấu hình không được hỗ trợ |
 | HuggingFaceEmbedding | EmbeddingProvider | model, embed_text, embed_batch, get_dimension | Sinh vector e5-large 1024 chiều; dùng tiền tố `query:` và `passage:` |
 
 ### 7.3.6 Các lớp truy hồi
@@ -1124,7 +1126,7 @@ Hàm `llm_factory` dùng `Settings.resolve_llm()` để tạo đúng lớp provi
 
 **Mẫu (Pattern):** Factory.
 
-**Vấn đề:** Cần chọn một trong nhiều nhà cung cấp mô hình (Groq/Mistral/Cohere/Gemini/Ollama) theo cấu hình.
+**Vấn đề:** Cần chọn một trong nhiều nhà cung cấp mô hình (Groq/Mistral/Cohere/Gemini/Fosta/Ollama) theo cấu hình.
 
 **Giải pháp:** `resolve_llm(provider)` trả `LLMChoice`; factory `_build(choice)` tạo provider tương ứng.
 
@@ -1536,7 +1538,7 @@ POST /api/auth/login
 
 | Hệ thống | Giao diện | Mục đích |
 |---|---|---|
-| Groq / Mistral / Cohere / Gemini | REST API (HTTPS) | Tổng hợp câu trả lời |
+| Groq / Mistral / Cohere / Gemini / Fosta | REST API (HTTPS) | Tổng hợp câu trả lời |
 | Ollama (tùy chọn) | REST API cục bộ | Chạy mô hình ngôn ngữ trên máy |
 
 ---
@@ -1648,7 +1650,7 @@ backend/app/
 ├── retrieval/      # base + vector_strategy (+ hybrid khi bật)
 ├── storage/        # vector_store (ChromaDB)
 ├── chunking/       # chunker
-├── providers/      # llm_provider, embedding, groq/mistral/gemini..., factory
+├── providers/      # llm_provider, _http_base, embedding, groq/mistral/cohere/gemini/fosta/ollama, factory
 ├── prompts/        # system_prompts
 ├── models/         # schemas (pydantic)
 ├── config.py       # Settings (.env)
@@ -1695,7 +1697,7 @@ backend/app/
 
 Kiểm thử được chia thành ba mức: kiểm thử đơn vị (unit test), kiểm thử tích hợp (integration test) và kiểm thử toàn hệ thống (system test). Các kiểm thử tự động dùng mô hình giả (fake/mock) và ChromaDB trong bộ nhớ để không cần tải mô hình 2GB hoặc gọi API thật.
 
-Trong thư mục `backend/tests/` hiện có **39 hàm kiểm thử tự động** trải trên 7 tệp. Bộ test đã được chạy lại trên môi trường Python 3.11 (`.venv` + `requirements-dev.txt`) bằng lệnh `python -m pytest`: **toàn bộ 39/39 hàm PASS**. Các kết quả PASS/FAIL dưới đây được điền theo lần chạy này.
+Trong thư mục `backend/tests/` hiện có **41 hàm kiểm thử tự động** trải trên 8 tệp. Bộ test đã được chạy lại trên môi trường Python 3.11 (`.venv` + `requirements-dev.txt`) bằng lệnh `python -m pytest`: **toàn bộ 41/41 hàm PASS**. Các kết quả PASS/FAIL dưới đây được điền theo lần chạy này.
 
 ## 13.2 Kiểm thử đơn vị (Unit Test)
 
@@ -1704,6 +1706,7 @@ Trong thư mục `backend/tests/` hiện có **39 hàm kiểm thử tự động
 | `test_chunker.py` | 4 | Cắt theo Điều, cắt theo kích thước khi không có Điều, cắt Điều dài, xử lý văn bản rỗng |
 | `test_vector_store.py` | 2 | Thêm/tìm/xóa đoạn bằng vector, tìm trên kho rỗng |
 | `test_enrich_io.py` | 5 | Xuất dữ liệu làm giàu theo văn bản, parse import lọc theo số hiệu (bỏ qua văn bản khác, bắt lỗi sai định dạng) |
+| `test_fosta_provider.py` | 2 | Phân giải cấu hình Fosta qua factory; bóc nội dung từ response dạng Responses/Chat/SSE |
 
 ## 13.3 Kiểm thử tích hợp (Integration Test)
 
@@ -1864,7 +1867,7 @@ Kịch bản kiểm thử thủ công dự kiến: khởi động backend và fr
 
 | Loại kiểm thử | Số hàm/kịch bản đã có | Kết quả hiện tại | Việc còn lại |
 |---|---:|---|---|
-| Kiểm thử đơn vị | 11 hàm (chunker, vector_store, enrich_io) | 11/11 PASS | — |
+| Kiểm thử đơn vị | 13 hàm (chunker, vector_store, enrich_io, fosta_provider) | 13/13 PASS | — |
 | Kiểm thử tích hợp | 28 hàm (query/document pipeline, hybrid, enrich) | 28/28 PASS | Bổ sung test API quản lý văn bản/auth (TC-005→009) |
 | Kiểm thử toàn hệ thống | 1 kịch bản dự kiến | Chưa chạy | Khởi động ứng dụng và thực hiện end-to-end |
 
@@ -2040,7 +2043,7 @@ Làm giàu đoạn lúc lập chỉ mục (`EnrichStep`) và tìm kiếm lai vec
 
 | Mục tiêu | Kết quả |
 |---|---|
-| Pipeline RAG hoàn chỉnh có trích dẫn | Đạt; 39/39 test tự động PASS (pipeline, gating, hybrid, enrich) |
+| Pipeline RAG hoàn chỉnh có trích dẫn | Đạt; 41/41 test tự động PASS (pipeline, gating, hybrid, enrich) |
 | Chống bịa đặt bằng lọc ngưỡng và cơ chế dự phòng | Đạt ở mức thiết kế/hiện thực; cần đánh giá trên dữ liệu thật |
 | Giao diện chat + khu quản trị có xác thực | Đạt; cần cấu hình bắt buộc mật khẩu khi triển khai |
 | Kiến trúc module dễ mở rộng | Đạt |
@@ -2083,7 +2086,7 @@ Lược đồ bản ghi đoạn và từ điển dữ liệu tại chương 8.3�
 
 # PHỤ LỤC E – TEST CASE ĐẦY ĐỦ
 
-Mười test case (TC-001 đến TC-010) tại chương 13.5 phủ FR-01 đến FR-11. Bộ kiểm thử tự động hiện có 39 hàm trên 7 tệp trong `backend/tests/`, đã chạy PASS toàn bộ 39/39. Các ca chưa có test tự động (TC-005→007, TC-009 — thao tác API quản lý văn bản/xác thực) được ghi rõ trạng thái để kiểm thử thủ công hoặc bổ sung test API sau.
+Mười test case (TC-001 đến TC-010) tại chương 13.5 phủ FR-01 đến FR-11. Bộ kiểm thử tự động hiện có 41 hàm trên 8 tệp trong `backend/tests/`, đã chạy PASS toàn bộ 41/41. Các ca chưa có test tự động (TC-005→007, TC-009 — thao tác API quản lý văn bản/xác thực) được ghi rõ trạng thái để kiểm thử thủ công hoặc bổ sung test API sau.
 
 # PHỤ LỤC F – GIAO DIỆN HỆ THỐNG
 
