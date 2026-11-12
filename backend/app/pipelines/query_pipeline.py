@@ -103,7 +103,12 @@ class QueryPipeline:
         if ket_qua_som is not None:
             return ket_qua_som
 
-        do_tin_cay = self._calc_confidence(max(r.score for r in results))
+        max_score = max(r.score for r in results)
+        do_tin_cay = self._calc_confidence(max_score)
+        self._trace(
+            "pipeline", "gating: max_score=%.3f → synthesis (%d chunk, độ tin cậy=%s)",
+            max_score, len(results), do_tin_cay,
+        )
         return await self._synthesize(cau_hoi, results, do_tin_cay)
 
     def _gate(self, results: list[SearchResult]) -> KetQuaTraLoi | None:
@@ -135,7 +140,6 @@ class QueryPipeline:
         self, cau_hoi: str, results: list[SearchResult], do_tin_cay: str
     ) -> KetQuaTraLoi:
         """Gọi LLM tổng hợp câu trả lời có trích dẫn; LLM lỗi → trả đoạn gốc (fallback)."""
-        self._trace("pipeline", "→ synthesis (%d chunk, độ tin cậy=%s)", len(results), do_tin_cay)
         try:
             prompt = self._build_synthesis_prompt(cau_hoi, results)
             response = await self._llm.generate(

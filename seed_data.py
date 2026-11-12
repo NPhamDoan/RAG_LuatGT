@@ -77,7 +77,9 @@ async def _seed(replace: bool, reset: bool, only: str = "", enrich: str = "none"
     settings = get_settings()
     setup_logging(level=settings.log_level, log_file=settings.log_file or None)
 
-    embedding = HuggingFaceEmbedding(model_name=settings.embedding_model)
+    embedding = HuggingFaceEmbedding(
+        model_name=settings.embedding_model, dimension=settings.embedding_dimension
+    )
     primary_llm = create_primary_llm(settings)
     chroma = chromadb.PersistentClient(path=settings.chroma_persist_path)
 

@@ -296,7 +296,9 @@ def build_auto(deps: IndexDeps) -> EnrichStep:
         from app.providers.groq_provider import GroqProvider
 
         # Key riêng cho enrich; trống thì tái dùng GROQ_API_KEY đã cấu hình (qua resolve_llm).
-        api_key = cfg.enrich_llm_api_key.strip() or deps.settings.resolve_llm("groq").api_key
+        api_key = cfg.enrich_llm_api_key.strip()
+        if not api_key and deps.settings is not None:
+            api_key = deps.settings.resolve_llm("groq").api_key
         resolved_model = model or "openai/gpt-oss-20b"
         llm: LLMProvider = GroqProvider(api_key=api_key, model=resolved_model, timeout=timeout)
     elif provider == "ollama":
