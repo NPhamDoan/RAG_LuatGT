@@ -22,7 +22,7 @@ trả lời có **trích dẫn nguồn** (số hiệu, Điều, Khoản) + **nh�
 
 ## 2. TRẠNG THÁI CÁC PHASE ⭐
 
-Kế hoạch chia 5 phase (chi tiết: `docs/poc-phases.md`). Trạng thái hiện tại:
+Kế hoạch chia 5 phase (chi tiết: `docs/backup/poc-phases.md`). Trạng thái hiện tại:
 
 | Phase | Tên | Trạng thái | Nhánh git | Ghi chú |
 |---|---|---|---|---|
@@ -106,7 +106,8 @@ frontend/src/
 └── types/index.ts          # TrichDan, KetQuaTraLoi, Message, DocumentMetadata, PaginatedDocuments
 
 data/seed/                  # 3 PDF luật gốc (xem mục 8)
-docs/                       # poc-phases.md, báo cáo Phase 1 & 2 (.md + .docx + script generate)
+docs/                       # tai-lieu-thiet-ke-he-thong.md/.docx + diagrams/ + script build
+docs/backup/                # poc-phases.md, báo cáo Phase 1 & 2 (.md + .docx + script generate), tài liệu cũ khác
 run_all.bat / run_backend.bat / run_frontend.bat / setup.bat / build.bat
 ```
 
@@ -239,7 +240,7 @@ cd backend
 
 ## 12. Ghi chú cho session sau
 - Đang ở nhánh `phase-2`. Muốn code Phase 3 → tạo nhánh mới từ `phase-1` (hoặc `main`) vì Phase 3 độc lập Phase 2; hoặc từ `phase-2` nếu muốn gộp cả 2.
-- Báo cáo mỗi phase theo format: `docs/bao-cao-phaseN-poc.md` + `generate-bao-cao-phaseN-poc.py` (dùng python-docx, đã cài trong venv) → sinh `.docx`.
+- Báo cáo mỗi phase theo format: `docs/backup/bao-cao-phaseN-poc.md` + `generate-bao-cao-phaseN-poc.py` (dùng python-docx, đã cài trong venv) → sinh `.docx`.
 - Khi hoàn thành 1 phase: cập nhật **mục 2 (trạng thái phase)** và **mục 11** của file này.
 
 ---

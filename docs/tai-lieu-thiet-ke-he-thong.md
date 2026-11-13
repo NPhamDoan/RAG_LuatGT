@@ -2074,7 +2074,7 @@ Sáu use case (UC-01 đến UC-06) đã được đặc tả đầy đủ tại 
 
 # PHỤ LỤC B – CÁC SƠ ĐỒ UML
 
-Toàn bộ sơ đồ (context, use case, domain model, analysis class, activity, architecture, component, design class, sequence, state, ERD, deployment) đặt tại `docs/design/diagrams/` (nguồn `.drawio`) và `docs/design/diagrams/png/` (ảnh).
+Toàn bộ sơ đồ (context, use case, domain model, analysis class, activity, architecture, component, design class, sequence, state, ERD, deployment) đặt tại `docs/diagrams/` (nguồn `.drawio`) và `docs/diagrams/png/` (ảnh).
 
 # PHỤ LỤC C – TÀI LIỆU API
 
@@ -2090,7 +2090,7 @@ Mười test case (TC-001 đến TC-010) tại chương 13.5 phủ FR-01 đến 
 
 # PHỤ LỤC F – GIAO DIỆN HỆ THỐNG
 
-Mô tả chi tiết các màn hình tại chương 9.1. Ảnh chụp màn hình các màn hình chính được đặt trong thư mục `docs/design/screenshots/` với tên tương ứng:
+Mô tả chi tiết các màn hình tại chương 9.1. Ảnh chụp màn hình các màn hình chính được đặt trong thư mục `docs/screenshots/` với tên tương ứng:
 
 | Màn hình | Hình | Tệp ảnh |
 |---|---|---|

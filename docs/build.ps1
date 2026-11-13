@@ -1,6 +1,6 @@
 # Build tai lieu thiet ke: render lai PNG tu .drawio roi sinh file Word (.docx).
 #
-# Cach dung (chay trong thu muc docs/design):
+# Cach dung (chay trong thu muc docs):
 #   .\build.ps1                 # render PNG + build docx
 #   .\build.ps1 -SkipRender     # bo qua render, chi build docx
 #   .\build.ps1 -SkipDocx       # chi render PNG

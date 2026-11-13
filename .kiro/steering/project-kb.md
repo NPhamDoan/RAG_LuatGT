@@ -23,7 +23,7 @@ trả lời có **trích dẫn nguồn** (số hiệu, Điều, Khoản) + **nh�
 
 ## 2. TRẠNG THÁI CÁC PHASE ⭐
 
-Kế hoạch chia 5 phase (chi tiết: `docs/poc-phases.md`). Trạng thái hiện tại:
+Kế hoạch chia 5 phase (chi tiết: `docs/backup/poc-phases.md`). Trạng thái hiện tại:
 
 | Phase | Tên | Trạng thái | Vị trí | Ghi chú |
 |---|---|---|---|---|
@@ -145,8 +145,10 @@ frontend/src/
 └── types/index.ts          # TrichDan, KetQuaTraLoi, Message, DocumentMetadata, PaginatedDocuments...
 
 data/seed/                  # 4 PDF luật gốc (xem mục 8)
-docs/                       # poc-phases.md, báo cáo Phase 1&2 (.md/.docx + script generate), cai-thien-do-chinh-xac-rag.md,
-                            #   design/ (18 diagram drawio + PNG, tai-lieu-thiet-ke-he-thong.md/.docx, build.ps1, generate-docx.py, prepend-cover.py, Bia.docx)
+docs/                       # tai-lieu-thiet-ke-he-thong.md/.docx (tài liệu chính), diagrams/ (18 drawio + PNG),
+                            #   build.ps1, generate-docx.py, prepend-cover.py, Bia.docx
+docs/backup/                # tài liệu cũ: poc-phases.md, báo cáo Phase 1&2 (.md/.docx + script generate),
+                            #   cai-thien-do-chinh-xac-rag.md, Dieu_Tra_Kha_thi, rag-*.drawio
 run_all.bat / run_backend.bat / run_frontend.bat / setup.bat / build.bat
 ```
 
@@ -336,8 +338,8 @@ sửa metadata văn bản (PATCH), xem toàn văn Điều, lịch sử phiên ch
   Index step cần `app/indexing/{name}_step.py` có `build(deps)`; bật qua `INDEX_STEPS`.
 - Phase 4b verify: cần thêm `create_verify_llm` trong `llm_factory` (tái dùng `resolve_llm(VERIFY_LLM_PROVIDER)`)
   + step `after_answer`. Hiện `verify_llm_provider`/`GEMINI_*` đã sẵn trong config.
-- Báo cáo phase theo format `docs/bao-cao-phaseN-poc.md` + `generate-bao-cao-phaseN-poc.py` (python-docx) → sinh `.docx`.
-  Tài liệu thiết kế đầy đủ ở `docs/design/` (18 diagram drawio + PNG, `tai-lieu-thiet-ke-he-thong.md/.docx`, script build/render).
+- Báo cáo phase (cũ) theo format `docs/backup/bao-cao-phaseN-poc.md` + `generate-bao-cao-phaseN-poc.py` (python-docx) → sinh `.docx`.
+  Tài liệu thiết kế chính ở `docs/` (`tai-lieu-thiet-ke-he-thong.md/.docx`, `diagrams/` gồm 18 drawio + PNG, script `build.ps1`/`generate-docx.py`). Tài liệu cũ nằm ở `docs/backup/`.
 - Khi hoàn thành/đổi tính năng: cập nhật **mục 2 (trạng thái phase + git)**, **mục 6 (API)**, **mục 11 (hạn chế)** của file này.
 
 ---

@@ -1,4 +1,4 @@
-# Render tất cả file .drawio trong thư mục này sang PNG (docs/design/diagrams/png/).
+# Render tất cả file .drawio trong thư mục này sang PNG (docs/diagrams/png/).
 # Yêu cầu: draw.io desktop đã cài. Dùng --crop --border 20 để PNG không bị cắt nội dung.
 
 $ErrorActionPreference = "Stop"
